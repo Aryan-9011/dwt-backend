@@ -5,6 +5,7 @@ Pushes SSE status events throughout.
 """
 import os
 import json
+import asyncio
 from datetime import date
 from pathlib import Path
 
@@ -55,7 +56,7 @@ async def run_carousel(run_id: str, inspiration: int, topic_hint: str = None):
 
             filename = slide["filename"]
             path = str(out_dir / filename)
-            ig.generate_slide(slide["prompt"], path)
+            await asyncio.to_thread(ig.generate_slide, slide["prompt"], path)
 
             url = f"{BASE_URL}/outputs/carousel/{run_id}/{filename}"
             results.append({"index": i, "filename": filename, "url": url})

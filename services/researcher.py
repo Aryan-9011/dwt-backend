@@ -6,7 +6,7 @@ import os
 import json
 import anthropic
 
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+client = anthropic.AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 RESEARCH_SYSTEM = """You are a travel content researcher for Dream World Tours (DWT), a Pune-based group tour operator for Indian travelers (25–55 age group, aspirational domestic + international travel).
 
@@ -63,7 +63,7 @@ async def research_topic(date: str, avoid_topics: list[str], topic_hint: str = N
         topic_hint=topic_hint or "any great topic for Indian travelers",
     )
 
-    response = client.messages.create(
+    response = await client.messages.create(
         model="claude-opus-4-5",
         max_tokens=4096,
         system=RESEARCH_SYSTEM,
