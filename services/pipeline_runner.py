@@ -49,15 +49,19 @@ async def _run_via_agents(run_id: str, topic_hint: str = None):
 
     await run_store.push_event(run_id, "researching", "Starting agent pipeline...", 5)
 
-    # Find claude executable
+    # Find claude — try direct binary first, fall back to npx
     import shutil as sh
     claude_bin = sh.which("claude")
-    if not claude_bin:
-        run_store.fail_run(run_id, "claude CLI not found. Install Claude Code: npm install -g @anthropic-ai/claude-code")
-        await run_store.push_event(run_id, "error", "claude CLI not found", 0)
-        return
-
-    cmd = [claude_bin, "-p", prompt, "--output-format", "stream-json", "--verbose"]
+    if claude_bin:
+        cmd = [claude_bin, "-p", prompt, "--output-format", "stream-json", "--verbose"]
+    else:
+        npx_bin = sh.which("npx")
+        if not npx_bin:
+            run_store.fail_run(run_id, "claude CLI not found. Install Node.js + Claude Code.")
+            await run_store.push_event(run_id, "error", "claude CLI not found", 0)
+            return
+        cmd = [npx_bin, "-y", "@anthropic-ai/claude-code", "-p", prompt,
+               "--output-format", "stream-json", "--verbose"]
 
     try:
         process = await asyncio.create_subprocess_exec(
