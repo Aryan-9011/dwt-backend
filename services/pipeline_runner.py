@@ -22,10 +22,10 @@ BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
 USE_AGENTS = os.environ.get("USE_AGENTS", "false").lower() == "true"
 
 # Auto-detect workspace root:
-# Railway/Docker  → backend/workspace/ is bundled inside the image
-# Local dev       → workspace is 3 levels up from this file
+# Railway/Docker  → RAILWAY_ENVIRONMENT is set → use bundled backend/workspace/
+# Local dev       → use the real workspace 3 levels up (full agents + MCP + reference files)
 _backend_dir = Path(__file__).parent.parent
-if (_backend_dir / "workspace").exists():
+if os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_SERVICE_NAME"):
     WORKSPACE_ROOT = _backend_dir / "workspace"
 else:
     WORKSPACE_ROOT = _backend_dir.parent
