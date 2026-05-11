@@ -15,8 +15,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN chmod +x entrypoint.sh && \
-    mkdir -p outputs/carousel workspace/outputs/automation/carousel-pipeline
+# Create non-root user (Claude Code refuses --dangerously-skip-permissions as root)
+RUN useradd -m -u 1001 appuser && \
+    chmod +x entrypoint.sh && \
+    mkdir -p outputs/carousel workspace/outputs/automation/carousel-pipeline && \
+    chown -R appuser:appuser /app
+
+USER appuser
 
 EXPOSE 8000
 
