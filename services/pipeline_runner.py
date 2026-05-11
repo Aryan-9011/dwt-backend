@@ -145,7 +145,7 @@ async def _run_via_agents(run_id: str, topic_hint: str = None):
     for i, png in enumerate(sorted(slides_dir.glob("slide-*.png"))):
         dest = out_dir / png.name
         shutil.copy2(png, dest)
-        url = f"{BASE_URL}/outputs/carousel/{run_id}/{png.name}"
+        url = f"/api/slides/{run_id}/{png.name}"
         results.append({"index": i, "filename": png.name, "url": url})
 
     # Get caption
@@ -207,7 +207,7 @@ async def _run_standalone(run_id: str, inspiration: int, topic_hint: str = None)
             filename = slide["filename"]
             path = str(out_dir / filename)
             await asyncio.to_thread(ig.generate_slide, slide["prompt"], path)
-            url = f"{BASE_URL}/outputs/carousel/{run_id}/{filename}"
+            url = f"/api/slides/{run_id}/{filename}"
             results.append({"index": i, "filename": filename, "url": url})
 
         await run_store.push_event(run_id, "generating_slides", "Writing Instagram caption...", 93)
