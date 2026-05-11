@@ -19,8 +19,16 @@ from services import run_store, researcher, image_generator as ig
 
 OUTPUTS_DIR = Path(__file__).parent.parent / "outputs" / "carousel"
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
-WORKSPACE_ROOT = Path(__file__).parent.parent.parent
 USE_AGENTS = os.environ.get("USE_AGENTS", "false").lower() == "true"
+
+# Auto-detect workspace root:
+# Railway/Docker  → backend/workspace/ is bundled inside the image
+# Local dev       → workspace is 3 levels up from this file
+_backend_dir = Path(__file__).parent.parent
+if (_backend_dir / "workspace").exists():
+    WORKSPACE_ROOT = _backend_dir / "workspace"
+else:
+    WORKSPACE_ROOT = _backend_dir.parent
 
 
 async def run_carousel(run_id: str, inspiration: int, topic_hint: str = None):
