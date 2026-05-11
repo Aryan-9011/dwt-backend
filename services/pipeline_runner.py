@@ -57,7 +57,7 @@ async def _run_via_agents(run_id: str, topic_hint: str = None):
         await run_store.push_event(run_id, "error", "claude CLI not found", 0)
         return
 
-    cmd = [claude_bin, "-p", prompt, "--output-format", "stream-json"]
+    cmd = [claude_bin, "-p", prompt, "--output-format", "stream-json", "--verbose"]
 
     try:
         process = await asyncio.create_subprocess_exec(
