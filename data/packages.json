@@ -1,0 +1,468 @@
+[
+  {
+    "slug": "kashmir-leh-ladakh",
+    "name": "Kashmir - Leh Ladakh",
+    "duration": "8N/9D",
+    "price_display": "From ₹73,000",
+    "flights": true,
+    "departures": [
+      "May 2026"
+    ],
+    "highlights": [
+      "Shikara ride on Dal Lake, Srinagar's jewel",
+      "Cross Zoji La Pass, gateway to Ladakh's wonders",
+      "Witness Indus & Zanskar Rivers' breathtaking Sangam",
+      "Ride double-humped camels in Nubra Valley's dunes",
+      "Marvel at Pangong Lake's ever-changing colors"
+    ],
+    "spotlight_fact": "Ladakh's stark beauty and spiritual aura offer a transformative journey unlike any other on Earth.",
+    "scene": "Pangong Lake at sunset — vast expanse of turquoise water reflecting the snow-capped mountains, prayer flags fluttering in the breeze, golden light illuminating the rugged landscape, creating a sense of serenity and awe",
+    "_hash": "366780a5ab14",
+    "_source": "31 MAY 26 - KASHMIR + LEH LADAKH - 8N 9D (ENGLISH.pdf"
+  },
+  {
+    "slug": "shri-amarnathji-yatra",
+    "name": "Shri Amarnathji Yatra",
+    "duration": "5N/6D",
+    "price_display": "From ₹55,000",
+    "flights": true,
+    "departures": [
+      "10 Jul 2026",
+      "24 Jul 2026",
+      "02 Aug 2026"
+    ],
+    "highlights": [
+      "Seek blessings at the sacred Amarnath Cave",
+      "Enjoy a romantic Shikara ride on Dal Lake",
+      "Explore the 'Meadow of Flowers' in Gulmarg",
+      "Visit the serene valley of Doodhpathri",
+      "Discover Hazratbal Masjid's spiritual aura"
+    ],
+    "spotlight_fact": "Journey to Amarnath, where the divine ice lingam appears, offering a profound spiritual experience amidst breathtaking Himalayan scenery.",
+    "scene": "Amarnath Cave at dawn — pilgrims approach the ice lingam in the cave, surrounded by snow-covered mountains, soft golden light filtering through the cave entrance, creating a serene and spiritual atmosphere, wide-angle shot",
+    "_hash": "c51eb59c909e",
+    "_source": "AMARNATHJI YATRA - 5N 6D (ENGLISH)_.pdf"
+  },
+  {
+    "slug": "dubai-abu-dhabi",
+    "name": "Dubai & Abu Dhabi",
+    "duration": "5N/6D",
+    "price_display": "From ₹1,18,000",
+    "flights": true,
+    "departures": [
+      "11 Nov 2026",
+      "23 Dec 2026",
+      "19 Jan 2027"
+    ],
+    "highlights": [
+      "See Dubai from Burj Khalifa's 123rd floor with gold coffee",
+      "Explore floral displays at Dubai Miracle Garden",
+      "Experience dune bashing and BBQ in Desert Safari",
+      "Visit Abu Dhabi's Sheikh Zayed Grand Mosque",
+      "Shop at Dubai Gold Souk Market & Meena Bazar"
+    ],
+    "spotlight_fact": "Visit the newly-opened BAPS Hindu Temple (2024) — biggest Hindu temple in the Middle East — plus Burj Khalifa 123rd floor, Desert Safari, and 1-hour luxury Limo + Yacht rides.",
+    "scene": "Sheikh Zayed Grand Mosque at dusk — white marble architecture, reflecting pools, golden light, intricate Islamic patterns, serene atmosphere, wide-angle shot",
+    "_hash": "62ae926f2b49",
+    "_source": "MOST POPULAR DUBAI - 5N 6D.pdf"
+  },
+  {
+    "slug": "singapore-malaysia-thailand",
+    "name": "Singapore - Malaysia - Thailand",
+    "duration": "10N/11D",
+    "price_display": "From ₹1,85,000",
+    "flights": true,
+    "departures": [
+      "07 Aug 2026",
+      "11 Nov 2026"
+    ],
+    "highlights": [
+      "Explore Gardens by the Bay's Supertree Grove in Singapore",
+      "Experience thrilling rides at Universal Studios Singapore",
+      "Visit Batu Caves & Genting Highlands near Kuala Lumpur",
+      "Swim in crystal-clear waters off Coral Island, Pattaya",
+      "Cruise Bangkok's Chao Phraya River with dinner and music"
+    ],
+    "spotlight_fact": "Witness the vibrant blend of cultures, iconic landmarks, and thrilling adventures across three Southeast Asian gems.",
+    "scene": "Singapore's Gardens by the Bay at dusk — towering Supertrees illuminated in vibrant purple and blue, mist rolling across the futuristic landscape, silhouetted figures strolling below, creating a magical atmosphere",
+    "_hash": "99b39355562b",
+    "_source": "LUXURY SIN + KUL + BKK - 10N 11D (ENGLISH)_.pdf"
+  },
+  {
+    "slug": "singapore-malaysia",
+    "name": "Singapore - Malaysia",
+    "duration": "5N/6D",
+    "price_display": "From 1100 USD",
+    "flights": false,
+    "departures": [
+      "Aug 2026",
+      "Nov 2026"
+    ],
+    "highlights": [
+      "Explore Gardens by the Bay's Supertree Grove",
+      "Experience thrilling rides at Universal Studios",
+      "Visit Batu Caves and its iconic Murugan statue",
+      "Enjoy panoramic views from the KL Tower",
+      "Discover Sentosa Island's attractions"
+    ],
+    "spotlight_fact": "Experience the vibrant blend of cultures, futuristic architecture, and natural beauty that defines Singapore and Malaysia.",
+    "scene": "Singapore's Marina Bay Sands at dusk — iconic hotel towers, infinity pool reflecting the city lights, colorful light show on the water, silhouetted palm trees, warm evening glow",
+    "_hash": "12dbdc9f7cf8",
+    "_source": "LUXURY SIN + KUL - 5N 6D (ENGLISH)_.pdf"
+  },
+  {
+    "slug": "luxurious-thailand",
+    "name": "Luxurious Thailand",
+    "duration": "5N/6D",
+    "price_display": "From ₹65,000",
+    "flights": false,
+    "departures": [
+      "Jun 2026",
+      "Jul 2026",
+      "Aug 2026",
+      "Oct 2026"
+    ],
+    "highlights": [
+      "Witness the Alcazar Show's dazzling Thai dance performance",
+      "Explore Coral Island: speedboat, swim, parasail, jet ski",
+      "Immerse yourself in Pado Media Art Space's sensory journeys",
+      "Discover gems and jewelry at the world-famous Gems Gallery",
+      "See elephants and orchids at Nong Nooch Tropical Garden"
+    ],
+    "spotlight_fact": "Thailand's vibrant culture, stunning landscapes, and delicious cuisine create an unforgettable sensory experience.",
+    "scene": "Golden Buddha statue overlooking Pattaya at sunset — serene, 18-meter tall Buddha, panoramic city view, warm golden light, peaceful atmosphere",
+    "_hash": "688038a79940",
+    "_source": "LUXURY THAILAND - 5N 6D (ENGLISH)_.pdf"
+  },
+  {
+    "slug": "luxury-vietnam",
+    "name": "Luxury Vietnam",
+    "duration": "7N/8D",
+    "price_display": "From ₹1,45,000",
+    "flights": true,
+    "departures": [
+      "11 Aug 2026",
+      "11 Nov 2026",
+      "20 Dec 2026"
+    ],
+    "highlights": [
+      "Cruise Halong Bay's isles, caves, floating villages",
+      "Explore Hanoi: Train Street, Ethnology Museum",
+      "Boat trip through Ninh Binh's karst landscape",
+      "Golden Bridge views, Ba Na Hills cable car ride",
+      "Mekong Delta cruise: islands, fruit, folk music"
+    ],
+    "spotlight_fact": "Vietnam's blend of ancient history and vibrant culture creates an unforgettable sensory experience.",
+    "scene": "Hoi An at dusk — ancient yellow buildings lining the Thu Bon River, colorful lanterns glowing, sampans floating, creating a magical, timeless atmosphere",
+    "_hash": "700971b7593e",
+    "_source": "LUXURY VIETNAM - 7N 8D (ENGLISH)-.pdf"
+  },
+  {
+    "slug": "dubai-abu-dhabi-6n-7d",
+    "name": "Luxurious Dubai & Abu Dhabi",
+    "duration": "6N/7D",
+    "price_display": "From 1150 USD",
+    "flights": false,
+    "departures": [
+      "21 Oct 2026",
+      "11 Nov 2026",
+      "13 Nov 2026",
+      "15 Nov 2026",
+      "21 Dec 2026",
+      "23 Dec 2026",
+      "24 Dec 2026"
+    ],
+    "highlights": [
+      "Yacht ride in Dubai, enjoying the skyline from the water",
+      "See Dubai from Burj Khalifa's 123rd floor with gold coffee",
+      "Explore Dubai's Miracle Garden and Global Village",
+      "Desert safari with dune bashing and BBQ dinner",
+      "Visit Abu Dhabi's Grand Mosque and BAPS Hindu Temple"
+    ],
+    "spotlight_fact": "Experience the futuristic wonders and cultural richness of the UAE, where tradition meets innovation in a dazzling display.",
+    "scene": "Sheikh Zayed Grand Mosque at sunset — white marble reflecting golden light, intricate floral designs, serene reflecting pools, long shadows stretching across the courtyard",
+    "_hash": "b78223afd7fc",
+    "_source": "LUXURIOUS DUBAI - 6N 7D.pdf"
+  },
+  {
+    "slug": "kashmir-apple-blossom",
+    "name": "Kashmir Apple Blossom",
+    "duration": "6N/7D",
+    "price_display": "From ₹40,000",
+    "flights": true,
+    "departures": [
+      "07 Sep 2026"
+    ],
+    "highlights": [
+      "Explore Pahalgam's Aru & Betaab Valleys by local vehicle",
+      "Visit Apple Valley, Kashmir's famous fruit bowl",
+      "Ride Gulmarg Gondola, Asia's highest cable car",
+      "Discover Gurez Valley's meadows & Kishanganga River",
+      "Romantic Shikara ride on Dal Lake, houseboat stay"
+    ],
+    "spotlight_fact": "Kashmir's serene beauty and vibrant culture offer an unforgettable escape into a paradise on Earth.",
+    "scene": "Dal Lake at sunset — colorful shikaras glide on calm water, Mughal gardens in the background, golden light, snow-capped mountains, peaceful atmosphere",
+    "_hash": "1291ad687c66",
+    "_source": "APPLE BLOSSOM KASHMIR - 6N 7D.pdf"
+  },
+  {
+    "slug": "arunachal-assam-meghalaya",
+    "name": "Enchanting Three Sisters Journey: Arunachal - Assam - Meghalaya",
+    "duration": "10N/11D",
+    "price_display": "From ₹81,000",
+    "flights": true,
+    "departures": [
+      "21 Oct 2026",
+      "19 Nov 2026"
+    ],
+    "highlights": [
+      "Explore Tawang Monastery, a spiritual and cultural hub",
+      "Witness the beauty of Sela Pass & Paradise Lake",
+      "Experience thrilling jeep safaris in Kaziranga National Park",
+      "Discover Asia's cleanest village, Mawlynnong",
+      "Marvel at Nohkalikai Falls, cascading from great heights"
+    ],
+    "spotlight_fact": "Journey to India's Indo-China border at Bumla Pass (13,700 ft) — the most unique bucket-list experience in the DWT catalog, alongside Sela Pass, Tawang Monastery, and Kaziranga's rare one-horned rhinos.",
+    "scene": "Tawang Monastery at dawn — golden sunlight illuminating the monastery's intricate architecture, prayer flags fluttering in the crisp mountain air, monks chanting softly, panoramic view of the valley below",
+    "_hash": "6b8904e7e882",
+    "_source": "ARUNACHAL + ASSAM + MEGHALAYA - 10N 11D _.pdf"
+  },
+  {
+    "slug": "economical-thailand",
+    "name": "Economical Thailand",
+    "duration": "4N/5D",
+    "price_display": "From ₹35,000",
+    "flights": false,
+    "departures": [
+      "Jun 2026",
+      "Jul 2026",
+      "Aug 2026",
+      "Oct 2026"
+    ],
+    "highlights": [
+      "See the Big Buddha overlooking Pattaya from its temple",
+      "Speedboat to Coral Island, swim in crystal-clear waters",
+      "Explore Nong Nooch Garden's orchids and Thai shows",
+      "Safari World: witness giraffes, zebras, tigers, and lions",
+      "Bangkok: visit Golden Buddha and Marble Buddha temples"
+    ],
+    "spotlight_fact": "Thailand's vibrant culture, stunning beaches, and delicious cuisine create an unforgettable sensory experience.",
+    "scene": "Floating market outside Bangkok at dawn — longtail boats laden with colorful fruits and flowers, vendors in traditional hats, golden light reflecting on the water, bustling atmosphere",
+    "_hash": "4526e5e66eba",
+    "_source": "ECONOMICAL THAILAND - 4N 5D (ENGLISH)_.pdf"
+  },
+  {
+    "slug": "pattaya-bangkok",
+    "name": "Pattaya & Bangkok",
+    "duration": "4N/5D",
+    "price_display": "From ₹45,000",
+    "flights": false,
+    "departures": [
+      "Aug 2026",
+      "Nov 2026"
+    ],
+    "highlights": [
+      "See the Big Buddha overlooking Pattaya's golden shores",
+      "Experience the vibrant Alcazar Show's dazzling performances",
+      "Explore Coral Island with speedboat ride and water activities",
+      "Discover Nong Nooch Garden's cultural shows and orchids",
+      "Cruise Chao Phraya River with dinner, music, and culture"
+    ],
+    "spotlight_fact": "Thailand's vibrant culture, stunning temples, and delicious cuisine create an unforgettable sensory experience.",
+    "scene": "Golden Buddha Temple, Bangkok, late afternoon — giant gold statue gleaming in setting sun, monks in saffron robes, intricate carvings, peaceful atmosphere",
+    "_hash": "623aced6f01f",
+    "_source": "LUXURY THAILAND - 4N 5D (ENGLISH).pdf"
+  },
+  {
+    "slug": "luxurious-thailand-5n-6d",
+    "name": "Luxurious Thailand",
+    "duration": "5N/6D",
+    "price_display": "From ₹65,000",
+    "flights": false,
+    "departures": [
+      "Jun 2026",
+      "Jul 2026",
+      "Aug 2026",
+      "Oct 2026"
+    ],
+    "highlights": [
+      "See the Alcazar Show, a vibrant Thai dance performance",
+      "Explore Coral Island by speedboat, swim, and parasail",
+      "Experience digital art at Pado Media Art Space",
+      "Visit Nong Nooch Garden, famed for cultural shows",
+      "Cruise Chao Phraya River with dinner, music, and shows"
+    ],
+    "spotlight_fact": "Thailand's vibrant culture and stunning landscapes create unforgettable memories.",
+    "scene": "Golden Buddha statue overlooking Pattaya at sunset — warm light, serene atmosphere, lush greenery in the background, wide-angle shot",
+    "_hash": "5e4cc365485a",
+    "_source": "LUXURY THAILAND - 5N 6D (ENGLISH).pdf"
+  },
+  {
+    "slug": "sikkim-darjeeling",
+    "name": "Sikkim - Darjeeling",
+    "duration": "7N/8D",
+    "price_display": "From ₹45,000",
+    "flights": false,
+    "departures": [
+      "28 Sep 2026",
+      "16 Nov 2026"
+    ],
+    "highlights": [
+      "Witness sunrise over Kanchenjunga from Tiger Hill",
+      "Explore the 'Valley of Flowers' in Yumthang Valley",
+      "Visit Tsomgo Lake and Baba Mandir",
+      "See panoramic views from Singhik View Point",
+      "Discover Pemayangtse Monastery and Rabies Ruins"
+    ],
+    "spotlight_fact": "The ethereal beauty of the Himalayas and the vibrant culture of its people create an unforgettable tapestry of experiences.",
+    "scene": "Tiger Hill at dawn — snow-capped Kanchenjunga ablaze with first light, mist-filled valleys below, prayer flags fluttering, huddled tourists silhouetted against the orange sky, long exposure",
+    "_hash": "2f0b6ff2ab76",
+    "_source": "SIKKIM - DARJEELING - 7N 8D.pdf"
+  },
+  {
+    "slug": "chardham-yatra",
+    "name": "Chardham Yatra",
+    "duration": "11N/12D",
+    "price_display": "From ₹59,999",
+    "flights": true,
+    "departures": [
+      "May 2026"
+    ],
+    "highlights": [
+      "Witness the sacred Ganga Aarti at Har Ki Pauri, Haridwar",
+      "Seek blessings at Yamunotri Mata Temple and Yamuna's origin",
+      "Experience the spiritual aura of Kedarnath Jyotirlinga",
+      "Visit Badrinath Temple and India's last village, Mana",
+      "Explore Gangotri Temple and the legendary Bhagirath Shila"
+    ],
+    "spotlight_fact": "Embark on a soul-stirring pilgrimage through the majestic Himalayas, seeking divine blessings at four revered shrines.",
+    "scene": "Kedarnath Temple at dawn — ancient stone temple nestled amidst towering snow-capped peaks, pilgrims ascending winding mountain paths, soft golden light illuminating the valley, a sense of profound spiritual serenity.",
+    "_hash": "b7485156c1cf",
+    "_source": "CHARDHAM YATRA - 11N 12D.pdf"
+  },
+  {
+    "slug": "womens-wonderland-thailand",
+    "name": "Women's Wonderland Thailand",
+    "duration": "4N/5D",
+    "price_display": "From ₹70,000",
+    "flights": true,
+    "departures": [
+      "07 Jul 2026"
+    ],
+    "highlights": [
+      "Witness the dazzling Alcazar Show with vibrant costumes",
+      "Speedboat to Coral Island for swimming and water sports",
+      "Explore Gems Gallery and visit Pattaya's Big Buddha Temple",
+      "Encounter wildlife at Safari World and Marine Park shows",
+      "Discover Bangkok's Golden & Marble Buddha temples and shop"
+    ],
+    "spotlight_fact": "Immerse yourself in Thailand's vibrant culture, from dazzling shows to serene temples, and create unforgettable memories.",
+    "scene": "Coral Island at midday — pristine white sand beach, turquoise waters, lush green hills in background, speedboats docked, sun shining brightly, joyful atmosphere, wide shot.",
+    "_hash": "fe69f1965b9e",
+    "_source": "LADIES SPECIAL THAILAND - 4N 5D (ENGLISH).pdf"
+  },
+  {
+    "slug": "wonders-of-china",
+    "name": "Wonders of China",
+    "duration": "11N/12D",
+    "price_display": "From ₹2,95,000",
+    "flights": true,
+    "departures": [
+      "12 Nov 2026",
+      "12 Dec 2026",
+      "15 May 2027"
+    ],
+    "highlights": [
+      "Walk the Great Wall of China at Juyongguan Pass",
+      "Explore Beijing's Forbidden City + Tiananmen Square",
+      "Witness the Terracotta Warriors at Xi'an (UNESCO)",
+      "Marvel at the Avatar Hallelujah Mountains at Zhangjiajie",
+      "Cross the world's longest + highest Glass Bridge"
+    ],
+    "spotlight_fact": "DWT's longest international tour — 11 nights across 5 cities, from the Great Wall to the Avatar mountains, with high-speed bullet trains and an Indian tour manager throughout.",
+    "scene": "Great Wall of China at Juyongguan Pass at sunrise — the wall winding across misty mountain ridges, dramatic morning light on ancient stone, prayer flags fluttering, deep valleys below, cinematic wide shot with soft golden fog",
+    "_source": "manual-added-china-2026-2027"
+  },
+  {
+    "slug": "divine-kashi-yatra",
+    "name": "Divine Kashi Yatra",
+    "duration": "5N/6D",
+    "price_display": "From ₹40,000",
+    "flights": true,
+    "departures": [
+      "02 Sep 2026"
+    ],
+    "highlights": [
+      "Darshan at the newly-built Shri Ram Janmabhoomi Mandir, Ayodhya",
+      "Snan at Triveni Sangam — confluence of Ganga, Yamuna, Saraswati",
+      "Kashi Vishwanath Jyotirlinga darshan at Varanasi",
+      "Witness the mesmerizing Ganga Aarti at Dashashwamedh Ghat",
+      "Visit Sarnath — where Buddha delivered his first sermon"
+    ],
+    "spotlight_fact": "3 of India's holiest cities in one 6-day tour — Ayodhya (Ram Mandir), Prayagraj (Sangam) and Varanasi (Kashi Vishwanath) — with flight, deluxe 3★ hotels and Indian tour manager included.",
+    "scene": "Dashashwamedh Ghat Ganga Aarti at dusk — priests in saffron robes holding elaborate multi-tiered brass diyas with flames reaching skyward, glowing warm reflections on the Ganga river, misty holy atmosphere, crowds of devotees, cinematic wide shot",
+    "_source": "manual-added-kashi-2026"
+  },
+  {
+    "slug": "bhutan-7n-8d",
+    "name": "Bhutan",
+    "duration": "7N/8D",
+    "price_display": "From ₹75,000",
+    "flights": true,
+    "departures": [
+      "14 Sep 2026"
+    ],
+    "highlights": [
+      "Trek to Paro Taktsang — the iconic Tiger's Nest Monastery",
+      "Explore Punakha Dzong — Bhutan's most majestic fortress",
+      "Cross the world's longest suspension bridge in Punakha",
+      "Discover Thimphu — Bhutan's charming capital city",
+      "Experience traditional Bhutanese culture and cuisine"
+    ],
+    "spotlight_fact": "The Last Shangri-La — Bhutan measures success in Gross National Happiness. A carbon-negative kingdom where ancient monasteries cling to Himalayan cliffs and every valley feels untouched by time.",
+    "scene": "Paro Taktsang Monastery at sunrise — the iconic Tiger's Nest clinging to a sheer cliffside above pine forests, mist rising from the valley below, first golden light illuminating white monastery walls with red roofs, cinematic wide shot",
+    "_source": "manual-added-bhutan-2026"
+  },
+  {
+    "slug": "kenya-safari",
+    "name": "Kenya Safari",
+    "duration": "7N/8D",
+    "price_display": "From ₹1,99,000",
+    "flights": true,
+    "departures": [
+      "On request 2026"
+    ],
+    "highlights": [
+      "Witness the Great Migration in Maasai Mara",
+      "Big Five safari — lion, leopard, rhino, elephant, buffalo",
+      "Hot air balloon safari at sunrise (optional add-on)",
+      "Cultural visit to a Maasai tribal village",
+      "Amboseli National Park with Mt. Kilimanjaro backdrop"
+    ],
+    "spotlight_fact": "Africa's most legendary safari — witness the Great Migration where 1.5 million wildebeest cross the Mara River, and stay in luxury tented camps under a starlit sky.",
+    "scene": "Maasai Mara at sunrise — a lone acacia tree silhouetted against a burning orange African sky, wildebeest herd in the distance, tall golden savannah grass, cinematic wide shot with warm dust in the air",
+    "_source": "manual-added-kenya-2026"
+  },
+  {
+    "slug": "kerala-7n-8d",
+    "name": "Kerala",
+    "duration": "7N/8D",
+    "price_display": "From ₹60,000",
+    "flights": true,
+    "departures": [
+      "07 Nov 2026",
+      "18 Nov 2026",
+      "09 Dec 2026"
+    ],
+    "highlights": [
+      "Cruise the Alleppey backwaters on a traditional houseboat",
+      "Watch a mesmerizing Kathakali dance performance",
+      "Explore Munnar's endless tea plantations",
+      "Visit spice gardens and cardamom hills of Thekkady",
+      "Relax on Kovalam's palm-fringed beaches"
+    ],
+    "spotlight_fact": "God's Own Country — where you sleep on a wooden houseboat gliding through palm-lined backwaters, wake up to fresh idli-appam breakfast, and end your day watching Kathakali under lantern light.",
+    "scene": "Alleppey backwaters at golden hour — a traditional wooden kettuvallam houseboat gliding through emerald waters lined with coconut palms, warm sunset light reflecting on still water, cinematic wide shot with soft mist",
+    "_source": "manual-added-kerala-2026"
+  }
+]
