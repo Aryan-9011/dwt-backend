@@ -299,25 +299,25 @@
   },
   {
     "slug": "sikkim-darjeeling",
-    "name": "Sikkim - Darjeeling",
-    "duration": "7N/8D",
-    "price_display": "From ₹45,000",
-    "flights": false,
+    "name": "Sikkim & Darjeeling",
+    "duration": "8N/9D",
+    "price_display": "From ₹77,000",
+    "flights": true,
     "departures": [
       "28 Sep 2026",
       "16 Nov 2026"
     ],
     "highlights": [
-      "Witness sunrise over Kanchenjunga from Tiger Hill",
-      "Explore the 'Valley of Flowers' in Yumthang Valley",
-      "Visit Tsomgo Lake and Baba Mandir",
-      "See panoramic views from Singhik View Point",
-      "Discover Pemayangtse Monastery and Rabies Ruins"
+      "Sunrise over Mt. Kanchenjunga from Tiger Hill, Darjeeling",
+      "Yumthang Valley of Flowers with snow-capped alpine views",
+      "Tsomgo Lake (12,400 ft) + Baba Harbhajan Singh Mandir",
+      "Pelling Sky Walk with the golden Chenrezig Buddha statue",
+      "Optional Nathula Pass and Zero Point excursions",
+      "Batasia Loop, Ghoom Monastery + heritage Toy Train ride"
     ],
-    "spotlight_fact": "The ethereal beauty of the Himalayas and the vibrant culture of its people create an unforgettable tapestry of experiences.",
-    "scene": "Tiger Hill at dawn — snow-capped Kanchenjunga ablaze with first light, mist-filled valleys below, prayer flags fluttering, huddled tourists silhouetted against the orange sky, long exposure",
-    "_hash": "2f0b6ff2ab76",
-    "_source": "SIKKIM - DARJEELING - 7N 8D.pdf"
+    "spotlight_fact": "8 days, 4 destinations, 1 Himalayan bucket-list — Gangtok's monasteries, Lachung's Yumthang Valley of Flowers, Pelling's Sky Walk, and Darjeeling's Kanchenjunga sunrise — all-in ₹77,000 with Pune-Bagdogra flight, deluxe 3★ stays, all permits + insurance included.",
+    "scene": "Tiger Hill Darjeeling at dawn — the snow-capped Mt. Kanchenjunga massif glowing pink and gold in alpenglow, deep blue-purple pre-dawn sky above, layered mountain silhouettes in mist below, prayer flags fluttering, cinematic wide shot",
+    "_source": "manual-added-sikkim-darjeeling-2026"
   },
   {
     "slug": "chardham-yatra",
@@ -326,7 +326,8 @@
     "price_display": "From ₹59,999",
     "flights": true,
     "departures": [
-      "May 2026"
+      "28 Sep 2026",
+      "24 Oct 2026"
     ],
     "highlights": [
       "Witness the sacred Ganga Aarti at Har Ki Pauri, Haridwar",
