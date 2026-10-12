@@ -500,6 +500,15 @@ code{background:var(--surf3);padding:1px 5px;border-radius:3px;font-size:11px;fo
 .cal-eng{background:#fff;border:1px solid #e3ecec;border-radius:10px;padding:15px 17px;display:grid;gap:8px;font-size:11.5px;color:#55706f}
 .cal-eng b{color:#13343b;display:inline-block;min-width:54px}
 .cal-fix{margin:0 0 0 18px;font-size:12px;color:#55706f;line-height:1.85}
+
+.cal-weeks{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+.cal-wk{background:#fff;border:1px solid #e3ecec;border-radius:9px;padding:9px 14px;cursor:pointer;
+  text-align:left;font-family:inherit;line-height:1.3}
+.cal-wk:hover{border-color:#00a8a8}
+.cal-wk b{display:block;font-size:11.5px;color:#13343b}
+.cal-wk span{font-size:10px;color:#8aa3a2}
+.cal-wk-on{border-color:#0c6980;background:#f0f8f9}
+.cal-wk-on b{color:#0c6980}
 </style>
 </head>
 <body>
@@ -620,8 +629,9 @@ function renderAgentContent() {
     </div>`;
   } else if (a.id === 'instagram-pipeline') {
     actionHtml = `<div class="btn-actions">
-      <button class="btn-run" onclick="igTab('calendar')">🗓 This Week</button>
+      <button class="btn-run" onclick="igTab('calendar')">🗓 Calendar</button>
       <button class="btn-sec" onclick="igTab('queue')">📥 Approval Queue</button>
+      <button class="btn-sec" onclick="igGenerate()">✨ Generate Weeks</button>
       <button class="btn-sec" onclick="igRenderSpecs()">🎨 Render Specs</button>
     </div>`;
   } else if (a.id === 'weekly-growth') {
@@ -3117,6 +3127,30 @@ function fmtDate(iso) {
 init();
 
 // ── Instagram Pipeline — the draft gate ──────────────────────────────────
+
+let igWeeks = [], igWeekSel = null;
+
+async function igGenerate() {
+  const n = prompt('How many weeks to generate?  (1-8)', '3');
+  if (!n) return;
+  const host = igHost();
+  host.innerHTML = `<div class="ig-empty">Generating ${n} weeks from the live departure board…</div>`;
+  try {
+    const r = await fetch(`/api/ig/calendars/generate?weeks=${encodeURIComponent(n)}`, {method:'POST'});
+    const j = await r.json();
+    igWeekSel = (j.weeks || [])[0] || null;
+    await loadIgCalendar();
+  } catch (e) { host.innerHTML = `<div class="ig-empty">failed: ${e.message}</div>`; }
+}
+
+function igWeekBar() {
+  if (!igWeeks.length) return '';
+  return `<div class="cal-weeks">` + igWeeks.map(w =>
+    `<button class="cal-wk ${w.week_of === igWeekSel ? 'cal-wk-on' : ''}"
+       onclick="igWeekSel='${w.week_of}';loadIgCalendar()">
+       <b>${w.week_label || w.week_of}</b><span>${w.posts} posts</span></button>`).join('') + `</div>`;
+}
+
 let igView = 'calendar';
 function igTab(v) { igView = v; v === 'calendar' ? loadIgCalendar() : loadIgPipeline(); }
 
@@ -3131,7 +3165,12 @@ async function loadIgCalendar() {
   const host = igHost();
   host.innerHTML = '<div class="ig-empty">Loading calendar…</div>';
   try {
-    const c = await (await fetch('/api/ig/calendar')).json();
+    igWeeks = ((await (await fetch('/api/ig/calendars')).json()).items) || [];
+    if (!igWeekSel && igWeeks.length) igWeekSel = igWeeks[0].week_of;
+    const url = igWeekSel ? `/api/ig/calendar?week_of=${igWeekSel}` : '/api/ig/calendar';
+    const c = await (await fetch(url)).json();
+    if (c.detail) { host.innerHTML = `<div class="ig-empty"><b>No calendar yet.</b><br>
+      Click <b>✨ Generate Weeks</b> to build them from your live departure board.</div>`; return; }
     const rows = c.days.map(d => {
       const st = d.status === 'ready' ? '<span class="ig-state ig-ok">READY</span>'
                : d.status === 'needs-filming' ? '<span class="ig-state ig-bad">FILM IT</span>' : '';
@@ -3156,7 +3195,8 @@ async function loadIgCalendar() {
         <div><b>Format</b> ${c.rules.format}</div>
         <div class="cal-warn"><b>Reality check</b> ${c.rules.reality}</div>
       </div>
-      <h3 class="cal-h">Week of ${c.week_of}</h3>
+      ${igWeekBar()}
+      <h3 class="cal-h">${c.week_label || ('Week of ' + c.week_of)}</h3>
       <table class="cal-table">${rows}</table>
       <h3 class="cal-h">Departures driving the week</h3>
       <table class="cal-table cal-dep">${deps}</table>

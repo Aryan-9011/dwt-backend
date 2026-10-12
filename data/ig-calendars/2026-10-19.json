@@ -1,0 +1,158 @@
+{
+  "week_of": "2026-10-19",
+  "week_label": "19 Oct – 25 Oct 2026",
+  "handle": "@dreamworldtours_",
+  "generated_at": "2026-10-12T19:39:33",
+  "rules": {
+    "language": "Carousels ENGLISH · Reels MARATHI (Devanagari) · Hinglish only where the post is advice or emotion, never for a reference document.",
+    "framing": "Relational beats transactional 78 vs 23 at the median. Every week needs at least one genuinely relational post.",
+    "format": "This account's carousels win (266x/247x/120x) and its reels lose (1.00x/0.47x/0.42x). 3 carousels + 1 reel until a Marathi reel proves otherwise.",
+    "reality": "Dormant 417 days (7 Aug 2025 → 29 Sep 2026); median fell 13,099 → 36. Cold-start, not a penalty. Expect 50–150 on a good post. Consistency is the cure."
+  },
+  "days": [
+    {
+      "day": "MON",
+      "time": "—",
+      "format": "engage only",
+      "lang": "—",
+      "type": "—",
+      "angle": "20-minute engagement round. No post.",
+      "detail": "Stories x3. Comment on the reach and peer list before posting anything this week.",
+      "date": "19 Oct"
+    },
+    {
+      "day": "TUE",
+      "time": "7:30pm",
+      "format": "CAROUSEL",
+      "lang": "English",
+      "type": "TEACH",
+      "angle": "Itinerary carousel — Luxurious Dubai & Abu Dhabi",
+      "detail": "21 Oct · 2d out · From 1150 USD. Day-by-day listicle, the shape that produced this account's best posts. Include one honest slide about who the trip is NOT for. CTA: comment a keyword.",
+      "date": "20 Oct"
+    },
+    {
+      "day": "WED",
+      "time": "—",
+      "format": "stories + engage",
+      "lang": "—",
+      "type": "—",
+      "angle": "Last call — Luxurious Dubai & Abu Dhabi",
+      "detail": "5 frames, countdown sticker, DM keyword. ⚠️ keyword auto-replies still do not exist.",
+      "date": "21 Oct"
+    },
+    {
+      "day": "THU",
+      "time": "7:30pm",
+      "format": "REEL",
+      "lang": "Marathi",
+      "type": "PROOF",
+      "angle": "Proof — film something that actually happened",
+      "detail": "~35s. Open on the @md_tours register (747x): नमस्कार मायबाप पर्यटक मंडळी. A departure, an airport send-off, a group on the bus. Real faces. ⚠️ Only works if someone is briefed to film it.",
+      "date": "22 Oct"
+    },
+    {
+      "day": "FRI",
+      "time": "8:00pm",
+      "format": "CAROUSEL",
+      "lang": "English",
+      "type": "OFFER",
+      "angle": "What Enchanting Three Sisters Journey: Arunachal - Assam - Meghalaya actually includes",
+      "detail": "21 Oct · 2d out · From ₹81,000. Line-item breakdown, not an offer post — 'DM for details' scored 0.47x here. State plainly what is NOT included.",
+      "date": "23 Oct"
+    },
+    {
+      "day": "SAT",
+      "time": "—",
+      "format": "rest",
+      "lang": "—",
+      "type": "—",
+      "angle": "Stories only, 2–3 frames",
+      "detail": "Lowest-engagement window of the week. Do not burn a carousel on it.",
+      "date": "24 Oct"
+    },
+    {
+      "day": "SUN",
+      "time": "7:30pm",
+      "format": "CAROUSEL",
+      "lang": "Hinglish",
+      "type": "RELATIONAL",
+      "angle": "The relational slot — who are you taking?",
+      "detail": "Advice or emotion, never a reference document — this is where Hinglish belongs and where this account's best numbers come from. Tie it to Chardham Yatra if it fits. 24 Oct · 5d out · From ₹59,999",
+      "date": "25 Oct"
+    }
+  ],
+  "departures": [
+    {
+      "date": "Wed 21 Oct",
+      "days": 2,
+      "name": "Luxurious Dubai & Abu Dhabi",
+      "note": "6N/7D · From 1150 USD"
+    },
+    {
+      "date": "Wed 21 Oct",
+      "days": 2,
+      "name": "Enchanting Three Sisters Journey: Arunachal - Assam - Meghalaya",
+      "note": "10N/11D · From ₹81,000"
+    },
+    {
+      "date": "Sat 24 Oct",
+      "days": 5,
+      "name": "Chardham Yatra",
+      "note": "11N/12D · From ₹59,999"
+    },
+    {
+      "date": "Sat 07 Nov",
+      "days": 19,
+      "name": "Kerala",
+      "note": "7N/8D · From ₹60,000"
+    },
+    {
+      "date": "Wed 11 Nov",
+      "days": 23,
+      "name": "Dubai & Abu Dhabi",
+      "note": "5N/6D · From ₹1,18,000"
+    },
+    {
+      "date": "Wed 11 Nov",
+      "days": 23,
+      "name": "Singapore - Malaysia - Thailand",
+      "note": "10N/11D · From ₹1,85,000"
+    },
+    {
+      "date": "Wed 11 Nov",
+      "days": 23,
+      "name": "Luxury Vietnam",
+      "note": "7N/8D · From ₹1,45,000"
+    },
+    {
+      "date": "Wed 11 Nov",
+      "days": 23,
+      "name": "Luxurious Dubai & Abu Dhabi",
+      "note": "6N/7D · From 1150 USD"
+    }
+  ],
+  "engagement": {
+    "note": "20 min/day BEFORE posting, never after. Do NOT comment on direct competitors.",
+    "reach": [
+      "@capture.a.trip (median 236)",
+      "@wander.on (median 1388)"
+    ],
+    "peers": [
+      "@holidayscrowd (median 53 — our size)",
+      "@md_tours (median 43, 747x outlier)"
+    ],
+    "watch": [
+      "@veena_world",
+      "@kesaritoursofficial",
+      "@luxuryvacations_abroad",
+      "@aviratparikrama"
+    ],
+    "missing": "5 Pune/Maharashtra lifestyle creators — not competitors. Not yet sourced."
+  },
+  "fix_outside_calendar": [
+    "Bio says '25,000+ travellers'. The real number is 50,000+.",
+    "Bio has no Pune, no Maharashtra. You are a Pune operator reading as generic-national.",
+    "Apply for verification — 14,548 followers, 797 posts, 16 years, live website.",
+    "Keyword auto-replies do not exist. Every comment CTA is currently a dead end."
+  ]
+}

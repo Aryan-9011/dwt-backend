@@ -13,6 +13,7 @@ from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import FileResponse, PlainTextResponse
 
 from services import ig_pipeline as igp
+from services import ig_calendar as igc
 
 router = APIRouter()
 PENDING = igp.PENDING
@@ -65,12 +66,34 @@ async def pending():
     return {"count": len(items), "items": items}
 
 
+@router.get("/ig/calendars")
+async def calendars():
+    """Every generated week, newest first."""
+    return {"items": igc.listing()}
+
+
+@router.post("/ig/calendars/generate")
+async def generate_calendars(weeks: int = 3):
+    """Generate N consecutive weeks from the real departure board."""
+    weeks = max(1, min(int(weeks), 8))
+    made = await asyncio.to_thread(igc.generate, weeks)
+    return {"generated": len(made), "weeks": [c["week_of"] for c in made]}
+
+
 @router.get("/ig/calendar")
-async def calendar():
+async def calendar(week_of: str | None = None):
+    if week_of:
+        c = igc.load(week_of)
+        if not c:
+            raise HTTPException(404, f"no calendar for {week_of}")
+        return c
+    items = igc.listing()
+    if items:
+        return igc.load(items[0]["week_of"])
     f = igp.BACKEND / "data" / "ig-calendar.json"
-    if not f.exists():
-        raise HTTPException(404, "no calendar yet")
-    return json.loads(f.read_text(encoding="utf-8"))
+    if f.exists():
+        return json.loads(f.read_text(encoding="utf-8"))
+    raise HTTPException(404, "no calendar yet — POST /api/ig/calendars/generate")
 
 
 @router.get("/ig/specs")
