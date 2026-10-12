@@ -65,6 +65,14 @@ async def pending():
     return {"count": len(items), "items": items}
 
 
+@router.get("/ig/calendar")
+async def calendar():
+    f = igp.BACKEND / "data" / "ig-calendar.json"
+    if not f.exists():
+        raise HTTPException(404, "no calendar yet")
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
 @router.get("/ig/specs")
 async def specs():
     SPECS.mkdir(parents=True, exist_ok=True)

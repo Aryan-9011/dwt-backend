@@ -479,6 +479,27 @@ code{background:var(--surf3);padding:1px 5px;border-radius:3px;font-size:11px;fo
 .ig-rej{color:#a33521!important}
 .ig-out{margin-top:11px;font-size:11px;white-space:pre-wrap;color:#55706f;max-height:260px;overflow:auto}
 .ig-brief{max-height:560px;background:#fff;border:1px solid #e3ecec;border-radius:10px;padding:16px}
+
+.cal-rules{background:#fff;border:1px solid #e3ecec;border-radius:10px;padding:16px 18px;margin-top:14px;
+  display:grid;gap:9px;font-size:12px;line-height:1.6;color:#55706f}
+.cal-rules b{color:#13343b;display:inline-block;min-width:78px}
+.cal-warn{background:#fdf4e7;border-left:3px solid #f5c518;padding:9px 12px;border-radius:5px;color:#7a5c12}
+.cal-h{font-size:13px;font-weight:700;color:#13343b;margin:22px 0 9px;letter-spacing:.3px}
+.cal-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e3ecec;border-radius:10px;overflow:hidden}
+.cal-table td{padding:13px 14px;border-top:1px solid #eef4f4;vertical-align:top;font-size:12px}
+.cal-table tr:first-child td{border-top:none}
+.cal-day{width:64px;color:#13343b}.cal-day b{font-size:12.5px}.cal-day span{font-size:10.5px;color:#8aa3a2}
+.cal-time{width:64px;font-size:11px;color:#6c7f80;font-weight:600}
+.cal-fmt{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:1.1px;padding:3px 8px;border-radius:4px;margin-right:5px}
+.cal-carousel{background:#def0f5;color:#0c6980}.cal-reel{background:#fde7e4;color:#a33521}
+.cal-stories,.cal-engage,.cal-rest{background:#eef2f2;color:#6c7f80}
+.cal-lang{font-size:10px;color:#6c7f80;background:#f3f7f7;padding:3px 7px;border-radius:4px;margin-right:5px}
+.cal-angle{font-weight:600;color:#13343b;margin-top:7px;font-size:12.5px}
+.cal-detail{color:#6c7f80;margin-top:4px;line-height:1.55;font-size:11.5px}
+.cal-dep-date{width:92px;font-weight:700;color:#0c6980}.cal-dep-days{width:46px;color:#8aa3a2}
+.cal-eng{background:#fff;border:1px solid #e3ecec;border-radius:10px;padding:15px 17px;display:grid;gap:8px;font-size:11.5px;color:#55706f}
+.cal-eng b{color:#13343b;display:inline-block;min-width:54px}
+.cal-fix{margin:0 0 0 18px;font-size:12px;color:#55706f;line-height:1.85}
 </style>
 </head>
 <body>
@@ -569,7 +590,7 @@ function selectAgent(id) {
   if (selected.id === 'landing-pages') loadLandingPages();
   if (selected.id === 'marketing-posts') loadMarketingPosts();
   if (selected.id === 'skills-library') loadSkillsLibrary();
-  if (selected.id === 'instagram-pipeline') loadIgPipeline();
+  if (selected.id === 'instagram-pipeline') igTab('calendar');
 }
 
 function selectHistory() {
@@ -599,8 +620,9 @@ function renderAgentContent() {
     </div>`;
   } else if (a.id === 'instagram-pipeline') {
     actionHtml = `<div class="btn-actions">
-      <button class="btn-run" onclick="igRenderSpecs()">🎨 Render Ready Specs</button>
-      <button class="btn-sec" onclick="loadIgPipeline()">↻ Refresh Queue</button>
+      <button class="btn-run" onclick="igTab('calendar')">🗓 This Week</button>
+      <button class="btn-sec" onclick="igTab('queue')">📥 Approval Queue</button>
+      <button class="btn-sec" onclick="igRenderSpecs()">🎨 Render Specs</button>
     </div>`;
   } else if (a.id === 'weekly-growth') {
     actionHtml = `<div class="btn-actions">
@@ -3095,6 +3117,61 @@ function fmtDate(iso) {
 init();
 
 // ── Instagram Pipeline — the draft gate ──────────────────────────────────
+let igView = 'calendar';
+function igTab(v) { igView = v; v === 'calendar' ? loadIgCalendar() : loadIgPipeline(); }
+
+function igHost() {
+  const el = document.getElementById('content');
+  let h = document.getElementById('igHost');
+  if (!h) { h = document.createElement('div'); h.id = 'igHost'; el.appendChild(h); }
+  return h;
+}
+
+async function loadIgCalendar() {
+  const host = igHost();
+  host.innerHTML = '<div class="ig-empty">Loading calendar…</div>';
+  try {
+    const c = await (await fetch('/api/ig/calendar')).json();
+    const rows = c.days.map(d => {
+      const st = d.status === 'ready' ? '<span class="ig-state ig-ok">READY</span>'
+               : d.status === 'needs-filming' ? '<span class="ig-state ig-bad">FILM IT</span>' : '';
+      const fmt = d.format === '—' ? '' : `<span class="cal-fmt cal-${d.format.split(' ')[0].toLowerCase()}">${d.format}</span>`;
+      const lang = d.lang === '—' ? '' : `<span class="cal-lang">${d.lang}</span>`;
+      return `<tr>
+        <td class="cal-day"><b>${d.day}</b><br><span>${d.date}</span></td>
+        <td class="cal-time">${d.time}</td>
+        <td>${fmt} ${lang} ${st}
+          <div class="cal-angle">${d.angle}</div>
+          <div class="cal-detail">${d.detail}</div></td></tr>`;
+    }).join('');
+    const deps = c.departures.map(d =>
+      `<tr><td class="cal-dep-date">${d.date}</td><td class="cal-dep-days">${d.days}d</td>
+       <td><b>${d.name}</b>${d.note ? `<div class="cal-detail">${d.note}</div>` : ''}</td></tr>`).join('');
+    const fixes = c.fix_outside_calendar.map(f => `<li>${f}</li>`).join('');
+    const eng = c.engagement;
+    host.innerHTML = `
+      <div class="cal-rules">
+        <div><b>Language</b> ${c.rules.language}</div>
+        <div><b>Framing</b> ${c.rules.framing}</div>
+        <div><b>Format</b> ${c.rules.format}</div>
+        <div class="cal-warn"><b>Reality check</b> ${c.rules.reality}</div>
+      </div>
+      <h3 class="cal-h">Week of ${c.week_of}</h3>
+      <table class="cal-table">${rows}</table>
+      <h3 class="cal-h">Departures driving the week</h3>
+      <table class="cal-table cal-dep">${deps}</table>
+      <h3 class="cal-h">Engagement — 20 min/day, before posting</h3>
+      <div class="cal-eng">
+        <div><b>Reach</b> ${eng.reach.join(' · ')}</div>
+        <div><b>Peers</b> ${eng.peers.join(' · ')}</div>
+        <div><b>Watch</b> ${eng.watch.join(' · ')}</div>
+        <div class="cal-warn">${eng.note}<br>${eng.missing}</div>
+      </div>
+      <h3 class="cal-h">Fix outside the calendar</h3>
+      <ul class="cal-fix">${fixes}</ul>`;
+  } catch (e) { host.innerHTML = `<div class="ig-empty">Could not load calendar: ${e.message}</div>`; }
+}
+
 async function igRenderSpecs() {
   const host = document.getElementById('igHost');
   host.innerHTML = '<div class="ig-empty">Rendering…</div>';

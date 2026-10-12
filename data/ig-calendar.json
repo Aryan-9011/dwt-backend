@@ -1,0 +1,55 @@
+{
+  "week_of": "2026-10-12",
+  "handle": "@dreamworldtours_",
+  "rules": {
+    "language": "Carousels ENGLISH · Reels MARATHI (Devanagari) · Hinglish where relational. Never romanised Hinglish for reference posts.",
+    "framing": "Relational beats transactional 78 vs 23 at the median. At least one genuinely relational post per week.",
+    "format": "Your carousels win (266x/247x/120x). Your reels lose (1.00x/0.47x/0.42x). 3 carousels + 1 reel until the Marathi reel proves otherwise.",
+    "reality": "Account dormant 417 days (7 Aug 2025 → 29 Sep 2026). Median fell 13,099 → 36. That is cold-start, not a penalty. Expect 50–150 on a good post. Consistency is the cure, 3–6 weeks."
+  },
+  "days": [
+    { "day": "MON", "date": "12 Oct", "time": "—", "format": "engage only", "lang": "—", "type": "—",
+      "angle": "20-minute engagement round. No post.",
+      "detail": "Stories x3: poll 'Northeast or Dubai this November?' · office prep for Thursday's Thailand departure · countdown to 21 Oct." },
+    { "day": "TUE", "date": "13 Oct", "time": "7:30pm", "format": "CAROUSEL", "lang": "English", "type": "TEACH",
+      "angle": "The Ultimate 11-Day Northeast Itinerary — closes Three Sisters 21 Oct",
+      "detail": "10 slides. RENDERED AND APPROVED — in the queue below. Cover: 11 DAYS. 3 STATES. ₹81,000. Slide 9 is the honest one (non-star hotels, 6-8hr drives, not for your parents). CTA: Comment NORTHEAST.",
+      "status": "ready" },
+    { "day": "WED", "date": "14 Oct", "time": "—", "format": "stories + engage", "lang": "—", "type": "—",
+      "angle": "Three Sisters last call",
+      "detail": "5 frames: last call · '2 batches a year, this is the second' · Bumla Pass photo · countdown to 21 Oct · DM keyword sticker NORTHEAST. ⚠️ The NORTHEAST auto-reply does not exist yet." },
+    { "day": "THU", "date": "15 Oct", "time": "7:30pm", "format": "REEL", "lang": "Marathi", "type": "PROOF",
+      "angle": "Thailand group departs TODAY — film the airport send-off",
+      "detail": "~35s. Open in Marathi on the @md_tours register (747x): नमस्कार मायबाप पर्यटक मंडळी. Real faces, real luggage, name travellers on camera. ⚠️ TIME-CRITICAL: brief someone to film it in the morning or the footage never exists. This is your only chance this month at genuine trip content.",
+      "status": "needs-filming" },
+    { "day": "FRI", "date": "16 Oct", "time": "8:00pm", "format": "CAROUSEL", "lang": "English", "type": "OFFER",
+      "angle": "What ₹1,18,000 actually includes in Dubai — opens the 11 Nov wall",
+      "detail": "8 slides, line-item breakdown not an offer post. ('DM Dubai for more details' scored 0.47x — pure-CTA posts die here.) Slide 7 states what is NOT included: 2% TCS, lunches, personal expenses." },
+    { "day": "SAT", "date": "17 Oct", "time": "—", "format": "rest", "lang": "—", "type": "—",
+      "angle": "Stories only, 2–3 frames",
+      "detail": "Weekend is the lowest-engagement window. Do not burn a carousel on it." },
+    { "day": "SUN", "date": "18 Oct", "time": "7:30pm", "format": "CAROUSEL", "lang": "Hinglish", "type": "OPINION",
+      "angle": "Don't book your December holiday in December — seeds customised Dec–Jan",
+      "detail": "7 slides. Advice-shaped and conversational, which is where Hinglish belongs. By November the good hotels are gone and fares have doubled. CTA: Comment CUSTOM." }
+  ],
+  "departures": [
+    { "date": "Thu 15 Oct", "days": 3, "name": "Thailand (Economical + Luxurious)", "note": "FINAL 2026 batch" },
+    { "date": "Wed 21 Oct", "days": 9, "name": "Three Sisters — Arunachal + Assam + Meghalaya", "note": "₹81,000 · 2 batches only" },
+    { "date": "Wed 21 Oct", "days": 9, "name": "Dubai Luxurious", "note": "" },
+    { "date": "11–15 Nov", "days": 30, "name": "EIGHT departures in five days", "note": "Vietnam ₹1,45,000 · China ₹2,95,000 · Dubai ₹1,18,000 · SIN+KUL+BKK ₹1,85,000 · 50% advance due now" },
+    { "date": "Thu 19 Nov", "days": 38, "name": "Three Sisters — final batch of the season", "note": "" }
+  ],
+  "engagement": {
+    "note": "20 min/day BEFORE posting, never after. Do NOT comment on direct competitors.",
+    "reach": ["@capture.a.trip (median 236, 8/12 reels)", "@wander.on (median 1388)"],
+    "peers": ["@holidayscrowd (median 53 — our size)", "@md_tours (median 43, 747x outlier)"],
+    "watch": ["@veena_world", "@kesaritoursofficial", "@luxuryvacations_abroad", "@aviratparikrama"],
+    "missing": "5 Pune/Maharashtra lifestyle creators — not competitors, creators whose audience could buy. Not yet sourced."
+  },
+  "fix_outside_calendar": [
+    "Bio says '25,000+ travellers'. The real number is 50,000+. Under-claiming by half.",
+    "Bio has no Pune, no Maharashtra. You are a Pune operator reading as generic-national.",
+    "Apply for verification — 14,548 followers, 797 posts, 16 years, live website.",
+    "NORTHEAST / DUBAI / CUSTOM keyword auto-replies do not exist. Three CTAs this week depend on them."
+  ]
+}
