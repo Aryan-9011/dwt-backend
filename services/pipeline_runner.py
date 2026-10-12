@@ -10,15 +10,35 @@ MODE B  USE_AGENTS=false  → standalone Python pipeline (Claude API + Gemini di
 """
 import os
 import json
+import base64
 import asyncio
 import shutil
+import requests
 from datetime import date
 from pathlib import Path
 
-from services import run_store, researcher, image_generator as ig
+from services import run_store, researcher, image_generator as ig, db
 
 OUTPUTS_DIR = Path(__file__).parent.parent / "outputs" / "carousel"
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
+IMGBB_API_KEY = os.environ.get("IMGBB_API_KEY")
+
+
+def _upload_imgbb(image_path: str, name: str) -> str:
+    """Upload image to imgbb and return permanent URL."""
+    if not IMGBB_API_KEY:
+        raise RuntimeError("IMGBB_API_KEY not set")
+    with open(image_path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    resp = requests.post(
+        "https://api.imgbb.com/1/upload",
+        data={"key": IMGBB_API_KEY, "image": b64, "name": Path(name).stem},
+        timeout=60,
+    )
+    result = resp.json()
+    if not result.get("success"):
+        raise RuntimeError(f"imgbb upload failed: {result}")
+    return result["data"]["url"]
 USE_AGENTS = os.environ.get("USE_AGENTS", "false").lower() == "true"
 
 # Auto-detect workspace root:
@@ -166,6 +186,8 @@ async def _run_via_agents(run_id: str, topic_hint: str = None):
         100,
         {"slides": results, "caption": caption, "topic": topic},
     )
+    db.save_run(run_id, "carousel", "complete", topic=topic,
+                result={"topic": topic, "slides": results, "caption": caption})
 
 
 # ── MODE B — Standalone Python Pipeline ───────────────────────────────────────
@@ -176,18 +198,65 @@ async def _run_standalone(run_id: str, inspiration: int, topic_hint: str = None)
     try:
         await run_store.push_event(run_id, "researching", "Finding the best topic for today...", 5)
 
-        recent = [r["topic"] for r in run_store.get_all_runs()
-                  if r.get("topic") and r["run_id"] != run_id][:5]
+        # Pull recent topics from POSTGRES (persistent across redeploys)
+        # not from in-memory run_store which gets wiped on every container restart
+        recent_db_runs = db.get_runs(workflow="carousel", limit=20)
+        recent: list[str] = []
+        for r in recent_db_runs:
+            if r.get("status") != "complete":
+                continue
+            if r.get("id") == run_id:
+                continue
+            topic = r.get("topic")
+            if topic and topic.lower() not in [t.lower() for t in recent]:
+                recent.append(topic)
+            # Also pull destination names from prior slide filenames for richer avoidance
+            FILENAME_NOISE = {"slide", "cover", "cta", "intro", "outro", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"}
+            result = r.get("result") or {}
+            if isinstance(result, dict):
+                for s in (result.get("slides") or [])[:5]:
+                    if isinstance(s, dict):
+                        fname = (s.get("filename") or "").lower()
+                        snippet = fname.replace(".png", "").replace(".jpg", "")
+                        for chunk in snippet.split("-"):
+                            chunk = chunk.strip()
+                            if (len(chunk) > 4
+                                and not chunk.isdigit()
+                                and chunk not in FILENAME_NOISE
+                                and chunk not in [t.lower() for t in recent]):
+                                recent.append(chunk)
+        recent = recent[:15]
+        print(f"[researcher] avoiding {len(recent)} recent topics/destinations: {recent[:8]}")
+
+        # NEW: Pull current trending travel articles via Gemini Google Search grounding
+        # This grounds topic selection in real articles being published THIS WEEK,
+        # not just Gemini's training-data guesses.
+        await run_store.push_event(run_id, "researching", "Searching the web for trending travel articles...", 8)
+        try:
+            from services.web_research import research_travel_trends
+            web_research = await asyncio.to_thread(research_travel_trends)
+            n_articles = len(web_research.get("articles", [])) if web_research.get("available") else 0
+            n_actionable = sum(1 for a in (web_research.get("articles") or []) if a.get("actionable"))
+            if web_research.get("available"):
+                await run_store.push_event(
+                    run_id, "researching",
+                    f"Found {n_articles} live travel articles ({n_actionable} matching DWT destinations)",
+                    12,
+                )
+        except Exception as e:
+            print(f"[researcher] web research skipped: {str(e)[:120]}")
+            web_research = None
 
         data = await researcher.research_topic(
             date=date.today().isoformat(),
             avoid_topics=recent,
             topic_hint=topic_hint,
+            web_research=web_research,
         )
 
         topic = data["theme"]
         run_store.update_run(run_id, topic=topic)
-        await run_store.push_event(run_id, "researching", f"Topic: {topic}", 15, {"topic": topic})
+        await run_store.push_event(run_id, "researching", f"Topic: {topic}", 15, {"topic": topic, "web_research": web_research})
 
         await run_store.push_event(run_id, "writing_brief", "Writing slide briefs...", 20)
         slides_data = _build_slides(data, inspiration)
@@ -207,12 +276,27 @@ async def _run_standalone(run_id: str, inspiration: int, topic_hint: str = None)
             filename = slide["filename"]
             path = str(out_dir / filename)
             await asyncio.to_thread(ig.generate_slide, slide["prompt"], path)
-            url = f"/api/slides/{run_id}/{filename}"
-            results.append({"index": i, "filename": filename, "url": url})
+            # Upload to imgbb for permanent URL (survives container restarts)
+            try:
+                permanent_url = await asyncio.to_thread(_upload_imgbb, path, filename)
+            except Exception:
+                permanent_url = None
+            url = permanent_url or f"/api/slides/{run_id}/{filename}"
+            results.append({"index": i, "filename": filename, "url": url, "permanent": bool(permanent_url)})
 
         await run_store.push_event(run_id, "generating_slides", "Writing Instagram caption...", 93)
-        caption = _build_caption(data)
+        caption_original = _build_caption(data)
+
+        # Apply stop-slop pass to remove AI writing patterns
+        await run_store.push_event(run_id, "generating_slides", "Polishing caption (stop-slop)...", 95)
+        from services.stop_slop import clean as stop_slop_clean
+        slop_result = await stop_slop_clean(caption_original)
+        caption = slop_result["cleaned"]
+        if slop_result["changed"]:
+            print(f"[stop-slop] caption revised — original {len(caption_original)} chars, cleaned {len(caption)} chars")
+
         (out_dir / "caption.txt").write_text(caption)
+        (out_dir / "caption-original.txt").write_text(caption_original)  # keep for comparison
 
         run_store.complete_run(run_id, topic=topic, slides=results, caption=caption)
         await run_store.push_event(
@@ -221,10 +305,22 @@ async def _run_standalone(run_id: str, inspiration: int, topic_hint: str = None)
             100,
             {"slides": results, "caption": caption, "topic": topic},
         )
+        db.save_run(run_id, "carousel", "complete", topic=topic,
+                    result={
+                        "topic": topic,
+                        "slides": results,
+                        "caption": caption,
+                        "caption_original": caption_original,  # pre-stop-slop version
+                        "stop_slop_applied": slop_result["changed"],
+                        "stop_slop_error": slop_result.get("error"),
+                        "web_research": web_research,
+                        "avoid_list": recent,
+                    })
 
     except Exception as e:
         run_store.fail_run(run_id, str(e))
         await run_store.push_event(run_id, "error", str(e), 0)
+        db.save_run(run_id, "carousel", "failed", error=str(e))
         raise
 
 
@@ -233,7 +329,97 @@ def _build_slides(data: dict, inspiration: int) -> list[dict]:
     items = data["items"]
     n_inner = len(items)
 
-    if inspiration == 5:
+    if inspiration == 7:
+        # Cinematic single-destination with yellow accent + bottom-anchored text
+        n_inner = len(items)
+        # Build headline from cover headlines (extract a key word for yellow highlight)
+        headline_1 = data.get("cover_headline_1", "TOP DESTINATIONS")
+        headline_2 = data.get("cover_headline_2", "TO VISIT IN 2026")
+        # Default highlight word = first non-trivial word from headline_2 OR a chunk of theme
+        highlight_word = (data.get("cover_headline_3") or
+                          (data.get("theme", "INDIA").split()[0] if data.get("theme") else "INDIA")).upper()
+        slides.append({
+            "label": "Cover",
+            "filename": "slide-00-cover.png",
+            "prompt": ig.insp7_cover_prompt({
+                "headline_line_1": headline_1,
+                "headline_line_2": headline_2,
+                "highlight_word": highlight_word,
+                "photo_direction": items[0].get("photo_direction", "iconic cinematic travel destination at dusk"),
+            }),
+        })
+        for item in items:
+            idx = item["index"]
+            name = item["name_line_1"].lower().replace(" ", "-")
+            slides.append({
+                "label": item["name_line_1"],
+                "filename": f"slide-{idx:02d}-{name}.png",
+                "prompt": ig.insp7_inner_prompt({
+                    "destination_name": item["name_line_1"],
+                    "descriptor": item.get("descriptor") or item.get("descriptor_1") or "",
+                    "photo_direction": item.get("photo_direction", ""),
+                    "slide_counter": f"{idx + 1}/{n_inner + 2}",
+                }),
+            })
+        slides.append({
+            "label": "CTA",
+            "filename": f"slide-{n_inner + 1:02d}-cta.png",
+            "prompt": ig.insp7_cta_prompt({
+                "hook_line_1": "BOOK YOUR DREAM",
+                "hook_line_2": "TRIP TODAY",
+                "highlight_word": "TODAY",
+                "save_prompt": data["cta"].get("descriptor", "DM us to plan your trip"),
+                "contact_phone": os.environ.get("DWT_WHATSAPP", "+91 93226 08068"),
+                "photo_direction": data["cta"]["photo_direction"],
+            }),
+        })
+
+    elif inspiration == 6:
+        # Split-screen paired format — 2 destinations per slide
+        slides.append({
+            "label": "Cover",
+            "filename": "slide-00-cover.png",
+            "prompt": ig.insp6_cover_prompt({
+                "headline_line_1": data.get("cover_headline_1", "2026 IS CALLING"),
+                "headline_line_2": data.get("cover_headline_2", "WHERE WILL YOU GO?"),
+                "headline_line_3": data.get("cover_headline_3", ""),
+                "subtitle": data.get("cover_subhead", "Save this for later"),
+                "photo_direction": items[0].get("photo_direction", "iconic global travel destination at golden hour"),
+            }),
+        })
+        # Pair items 2-by-2
+        pairs = [(items[i], items[i+1]) for i in range(0, len(items)-1, 2)]
+        n_paired = len(pairs)
+        for pair_idx, (top, bot) in enumerate(pairs, 1):
+            counter_str = f"{pair_idx + 1}/{n_paired + 2}"  # +2 for cover & CTA
+            slug = f"{top['name_line_1']}-{bot['name_line_1']}".lower().replace(" ", "-")[:40]
+            slides.append({
+                "label": f"{top['name_line_1']} + {bot['name_line_1']}",
+                "filename": f"slide-{pair_idx:02d}-{slug}.png",
+                "prompt": ig.insp6_paired_inner_prompt({
+                    "top_country": top["name_line_1"],
+                    "top_place": top.get("city_state") or top.get("descriptor", "Iconic Sight"),
+                    "top_photo": top.get("photo_direction", ""),
+                    "bottom_country": bot["name_line_1"],
+                    "bottom_place": bot.get("city_state") or bot.get("descriptor", "Iconic Sight"),
+                    "bottom_photo": bot.get("photo_direction", ""),
+                    "slide_counter": counter_str,
+                }),
+            })
+        # CTA slide
+        slides.append({
+            "label": "CTA",
+            "filename": f"slide-{n_paired + 1:02d}-cta.png",
+            "prompt": ig.insp6_cta_prompt({
+                "hook_line_1": "DON'T WAIT",
+                "hook_line_2": "AND BOOK YOUR",
+                "hook_line_3": "HOLIDAY PACKAGE TODAY",
+                "contact_phone": os.environ.get("DWT_WHATSAPP", "+91 93226 08068"),
+                "photo_direction": data["cta"]["photo_direction"],
+            }),
+        })
+
+    elif inspiration == 5:
         slides.append({
             "label": "Cover",
             "filename": "slide-00-cover.png",

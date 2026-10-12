@@ -1,0 +1,81 @@
+{
+  "slug": "dwt",
+  "name": "Dream World Tours",
+  "wordmark": "DREAM WORLD TOURS",
+  "domain": "dreamworldtours.in",
+  "tagline": "Travel like a dream",
+  "tagline_devanagari": "जग पाहण्याचं स्वप्न तुमचं, ते पूर्ण करण्याचं ध्येय आमचं!",
+  "tagline_required_on_posts": true,
+  "reference_doc": "reference/brand-reference.md",
+  "default_kind": "tour",
+  "categories": [
+    "international",
+    "domestic",
+    "pilgrimage",
+    "corporate",
+    "educational"
+  ],
+  "colors": {
+    "primary": "#00a8a8",
+    "primary_dark": "#0c6980",
+    "light": "#c0f0f7",
+    "ink": "#1f628e",
+    "accent": "#f5c518",
+    "alert": "#e63946",
+    "paper": "#ffffff"
+  },
+  "fonts": {
+    "display": "Bold sans-serif",
+    "body": "Clean sans-serif",
+    "script": "Handwriting / script secondary"
+  },
+  "voice": {
+    "register": "premium, warm, service-first",
+    "person": "second person, respectful",
+    "prefer": [
+      "hassle-free",
+      "all-inclusive",
+      "end-to-end",
+      "trusted since 2010"
+    ],
+    "avoid": [
+      "cheap",
+      "budget-shaming",
+      "hard-sell scarcity"
+    ]
+  },
+  "imagery": {
+    "people_ratio": 0.3,
+    "style": "cinematic destination photography, editorial polish, scrapbook collage"
+  },
+  "trips": {
+    "source": "pdf",
+    "file": "data/packages.json",
+    "pdf_dir": "reference/itineraries"
+  },
+  "inspirations": [
+    "editorial-luxury",
+    "cinematic-yellow",
+    "vibrant-tropical",
+    "polaroid-scrapbook",
+    "minimal-modern",
+    "seasonal-festival"
+  ],
+  "channels": {
+    "instagram": {
+      "enabled": true,
+      "env_prefix": ""
+    },
+    "whatsapp": {
+      "enabled": true
+    },
+    "gmb": {
+      "enabled": true,
+      "env_prefix": ""
+    }
+  },
+  "logo": {
+    "knockout": "assets/dwt-logo-knockout.png",
+    "transparent": "assets/dwt-logo-transparent.png"
+  }
+}

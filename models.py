@@ -15,6 +15,8 @@ class WorkflowType(str, Enum):
     MARKETING_POST = "marketing_post"
     REEL_SCRIPTS = "reel_scripts"
     CONTENT_IDEAS = "content_ideas"
+    GMB = "gmb"
+    GROWTH_STRATEGY = "growth_strategy"
 
 
 class CarouselRunRequest(BaseModel):

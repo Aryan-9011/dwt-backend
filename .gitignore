@@ -7,3 +7,4 @@ outputs/
 run_history.json
 workspace/.mcp.json
 workspace/outputs/
+data/*.db

@@ -1,0 +1,3213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DWT Agent Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #090c13;
+  --surf:     #10141f;
+  --surf2:    #181d2e;
+  --surf3:    #202840;
+  --teal:     #0c6980;
+  --teal2:    #0f8faf;
+  --amber:    #f5c518;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --yellow:   #f59e0b;
+  --text:     #f0f4f8;
+  --text2:    #8fa3b8;
+  --text3:    #4d6078;
+  --border:   #1a2236;
+  --border2:  #243050;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── Header ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--surf);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;}
+.logo{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;letter-spacing:-.3px;}
+.logo-ring{width:24px;height:24px;border-radius:6px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.hdr-right{display:flex;align-items:center;gap:16px;}
+.pill{font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2);display:flex;align-items:center;gap:5px;}
+.pill-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.hdr-date{font-size:11px;color:var(--text3);}
+
+/* ── Layout ── */
+.body{display:flex;flex:1;overflow:hidden;}
+
+/* ── Sidebar ── */
+.sidebar{width:248px;flex-shrink:0;background:var(--surf);border-right:1px solid var(--border);overflow-y:auto;padding:12px 0;display:flex;flex-direction:column;}
+.sb-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);padding:6px 18px 10px;}
+.sb-spacer{flex:1;}
+.sb-divider{height:1px;background:var(--border);margin:8px 0;}
+.ag-item{display:flex;align-items:center;gap:11px;padding:9px 18px;cursor:pointer;transition:background .12s;position:relative;}
+.ag-item:hover{background:var(--surf2);}
+.ag-item.active{background:rgba(12,105,128,.13);}
+.ag-item.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--teal);border-radius:0 2px 2px 0;}
+.ag-icon{width:34px;height:34px;border-radius:9px;background:var(--surf3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:background .12s;}
+.ag-item.active .ag-icon{background:rgba(12,105,128,.25);}
+.ag-info{flex:1;min-width:0;}
+.ag-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ag-sched{font-size:11px;color:var(--text3);margin-top:1px;}
+.ag-dot{width:6px;height:6px;background:var(--green);border-radius:50%;flex-shrink:0;box-shadow:0 0 6px var(--green);}
+
+/* ── Main content ── */
+.content{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px;}
+
+/* ── Agent header ── */
+.ag-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;}
+.ag-hdr-left{display:flex;align-items:center;gap:14px;}
+.ag-hdr-icon{width:52px;height:52px;border-radius:13px;background:var(--surf2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.ag-title{font-size:20px;font-weight:700;letter-spacing:-.4px;}
+.ag-meta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;}
+.badge-sched{font-size:11px;color:var(--text2);background:var(--surf2);padding:2px 8px;border-radius:4px;border:1px solid var(--border);}
+.badge-tag{font-size:10px;color:var(--teal2);background:rgba(12,105,128,.12);padding:2px 7px;border-radius:3px;letter-spacing:.4px;text-transform:uppercase;}
+.ag-desc{font-size:13px;color:var(--text2);line-height:1.6;max-width:520px;margin-top:8px;}
+
+/* ── Buttons ── */
+.btn-run{display:flex;align-items:center;gap:7px;background:var(--teal);color:#fff;border:none;padding:10px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.btn-run:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 4px 18px rgba(12,105,128,.45);}
+.btn-run:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-run.running{background:var(--surf3);color:var(--amber);}
+.btn-sec{display:flex;align-items:center;gap:6px;background:var(--surf2);color:var(--text2);border:1px solid var(--border2);padding:9px 16px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+.btn-sec:hover{background:var(--surf3);color:var(--text);border-color:var(--teal);}
+.btn-actions{display:flex;gap:9px;align-items:center;flex-shrink:0;}
+.btn-claude{display:flex;align-items:center;gap:7px;background:var(--surf2);color:var(--text3);border:1px solid var(--border);padding:9px 16px;border-radius:8px;font-size:12px;}
+
+/* ── Steps ── */
+.steps{display:flex;align-items:center;gap:8px;}
+.step{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;background:var(--surf2);color:var(--text3);border:1px solid var(--border);transition:all .3s;}
+.step-n{width:16px;height:16px;border-radius:50%;background:currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--bg);flex-shrink:0;}
+.step.active{background:rgba(245,197,24,.08);color:var(--amber);border-color:rgba(245,197,24,.3);}
+.step.done{background:rgba(34,197,94,.08);color:var(--green);border-color:rgba(34,197,94,.25);}
+.step.err{background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.25);}
+.step-arrow{color:var(--border2);font-size:14px;}
+
+/* ── Console ── */
+.console{background:#080b11;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.con-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--surf);border-bottom:1px solid var(--border);}
+.con-title{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
+.con-status{font-size:11px;color:var(--text3);}
+.con-body{padding:12px 16px;min-height:60px;max-height:200px;overflow-y:auto;font-family:'SF Mono','Fira Code',monospace;font-size:11.5px;line-height:1.75;}
+.con-line{display:flex;gap:10px;}
+.con-time{color:var(--text3);flex-shrink:0;width:62px;}
+.con-msg{color:#dde5ef;}
+.con-msg.step{color:var(--amber);}
+.con-msg.ok{color:var(--green);}
+.con-msg.err{color:var(--red);}
+.con-msg.warn{color:var(--yellow);}
+.con-msg.info{color:var(--teal2);}
+
+/* ── Carousel input form ── */
+.carousel-form{background:var(--surf2);border:1px solid var(--border2);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:14px;}
+.form-row{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+.form-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px;}
+.form-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);}
+.form-input{background:var(--surf3);border:1px solid var(--border2);border-radius:7px;padding:9px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+.form-input:focus{border-color:var(--teal);}
+.form-input::placeholder{color:var(--text3);}
+.style-opts{display:flex;gap:8px;}
+.style-btn{padding:8px 16px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;background:var(--surf3);color:var(--text2);border:1px solid var(--border2);transition:all .15s;}
+.style-btn:hover{border-color:var(--teal);color:var(--text);}
+.style-btn.sel{background:rgba(12,105,128,.2);color:var(--teal2);border-color:var(--teal);}
+
+/* ── GMB Result ── */
+.result-grid{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:start;}
+.result-img{border-radius:10px;overflow:hidden;background:var(--surf2);border:1px solid var(--border2);aspect-ratio:1;}
+.result-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.result-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--text3);font-size:12px;}
+.result-card{background:var(--surf2);border:1px solid var(--border2);border-radius:10px;padding:14px;}
+.result-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.result-rlabel{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);}
+.badge-ok{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(34,197,94,.12);color:var(--green);}
+.badge-fail{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(239,68,68,.12);color:var(--red);}
+.dest-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.dest-name{font-size:13px;font-weight:600;}
+.tmpl-badge{font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(12,105,128,.15);color:var(--teal2);text-transform:capitalize;}
+.result-text{font-size:12px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow-y:auto;}
+
+/* ── Carousel Result ── */
+.slides-section{display:flex;flex-direction:column;gap:12px;}
+.slides-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;}
+.slides-strip::-webkit-scrollbar{height:4px;}
+.slides-strip::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.slide-thumb{flex-shrink:0;width:130px;border-radius:8px;overflow:hidden;border:2px solid var(--border2);cursor:pointer;transition:border-color .15s;background:var(--surf2);}
+.slide-thumb:hover,.slide-thumb.active{border-color:var(--teal2);}
+.slide-thumb img{width:100%;height:173px;object-fit:cover;display:block;}
+.slide-label{font-size:10px;color:var(--text3);padding:4px 6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.slide-preview-wrap{display:flex;gap:14px;align-items:flex-start;}
+.slide-preview{flex-shrink:0;width:280px;border-radius:10px;overflow:hidden;border:1px solid var(--border2);}
+.slide-preview img{width:100%;display:block;}
+.caption-card{flex:1;background:var(--surf2);border:1px solid var(--border2);border-radius:10px;padding:14px;}
+.caption-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:8px;}
+.caption-text{font-size:12px;color:var(--text2);line-height:1.7;white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto;}
+.copy-btn{margin-top:10px;padding:6px 12px;background:var(--surf3);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s;}
+.copy-btn:hover{border-color:var(--teal);color:var(--text);}
+.download-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.dl-btn{font-size:11px;padding:5px 11px;background:var(--surf3);border:1px solid var(--border2);border-radius:5px;color:var(--teal2);text-decoration:none;transition:border-color .15s;}
+.dl-btn:hover{border-color:var(--teal);}
+
+/* ── Progress bar ── */
+.prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--teal);border-radius:2px;transition:width .4s;}
+
+/* ── Section title ── */
+.sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+
+/* ── GMB History ── */
+.hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.hist-card{background:var(--surf2);border:1px solid var(--border);border-radius:9px;overflow:hidden;transition:border-color .2s;}
+.hist-card:hover{border-color:var(--teal);}
+.hist-img{width:100%;height:120px;object-fit:cover;display:block;background:var(--surf3);}
+.hist-no-img{height:120px;display:flex;align-items:center;justify-content:center;background:var(--surf3);font-size:28px;}
+.hist-body{padding:10px;}
+.hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.hist-dest{font-size:12px;font-weight:600;}
+.hist-time{font-size:11px;color:var(--text3);}
+.hist-preview{font-size:11.5px;color:var(--text3);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* ── All History view ── */
+.hist-filters{display:flex;gap:6px;margin-bottom:14px;}
+.hist-filter{padding:5px 13px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:var(--surf2);color:var(--text2);border:1px solid var(--border2);transition:all .15s;}
+.hist-filter:hover{border-color:var(--teal);color:var(--text);}
+.hist-filter.active{background:rgba(12,105,128,.2);color:var(--teal2);border-color:var(--teal);}
+.run-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+.run-card{background:var(--surf2);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.run-card:hover{border-color:var(--teal);}
+.run-thumb{width:100%;height:130px;object-fit:cover;display:block;background:var(--surf3);}
+.run-no-thumb{height:130px;display:flex;align-items:center;justify-content:center;background:var(--surf3);font-size:36px;}
+.run-body{padding:11px 12px;}
+.run-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.wf-badge{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
+.wf-gmb{background:rgba(245,197,24,.12);color:var(--amber);}
+.wf-carousel{background:rgba(12,105,128,.15);color:var(--teal2);}
+.run-status-ok{font-size:10px;color:var(--green);}
+.run-status-fail{font-size:10px;color:var(--red);}
+.run-topic{font-size:12.5px;font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.run-meta{font-size:11px;color:var(--text3);}
+.run-detail{background:var(--surf2);border:1px solid var(--border2);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.run-detail-hdr{display:flex;align-items:center;justify-content:space-between;}
+.run-detail-title{font-size:15px;font-weight:700;}
+.btn-back{padding:5px 12px;background:var(--surf3);border:1px solid var(--border2);border-radius:6px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .15s;}
+.btn-back:hover{border-color:var(--teal);color:var(--text);}
+.run-detail-body{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start;}
+.run-detail-img{border-radius:8px;overflow:hidden;border:1px solid var(--border2);}
+.run-detail-img img{width:100%;display:block;}
+.run-detail-info{display:flex;flex-direction:column;gap:8px;}
+.run-kv{display:flex;flex-direction:column;gap:3px;}
+.run-kv-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);}
+.run-kv-val{font-size:12.5px;color:var(--text2);line-height:1.55;}
+.run-kv-val.pre{white-space:pre-wrap;word-break:break-word;font-size:11.5px;max-height:180px;overflow-y:auto;}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text3);font-size:13px;}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+
+/* ── Not runnable ── */
+.info-box{background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:18px 22px;display:flex;align-items:flex-start;gap:14px;}
+.info-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+.info-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.info-text strong{color:var(--text);display:block;margin-bottom:3px;font-size:14px;}
+code{background:var(--surf3);padding:1px 5px;border-radius:3px;font-size:11px;font-family:'SF Mono',monospace;}
+
+/* ── Carousel History ── */
+.ch-section{display:flex;flex-direction:column;gap:14px;}
+.ch-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.ch-filters{display:flex;gap:6px;}
+.ch-filter{padding:5px 13px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:var(--surf2);color:var(--text2);border:1px solid var(--border2);transition:all .15s;}
+.ch-filter:hover{border-color:var(--teal);color:var(--text);}
+.ch-filter.active{background:rgba(12,105,128,.2);color:var(--teal2);border-color:var(--teal);}
+.ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
+.ch-card{background:var(--surf2);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s;}
+.ch-card:hover{border-color:var(--border2);}
+.ch-card.open{border-color:var(--teal2);}
+.ch-thumb{width:100%;height:136px;object-fit:cover;display:block;background:var(--surf3);cursor:pointer;}
+.ch-thumb-ph{height:136px;display:flex;align-items:center;justify-content:center;background:var(--surf3);font-size:36px;cursor:pointer;}
+.ch-body{padding:10px 12px;}
+.ch-topic{font-size:12.5px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ch-meta{font-size:11px;color:var(--text3);margin-bottom:8px;}
+.ch-btns{display:flex;gap:6px;}
+.ch-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surf3);color:var(--text2);transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.ch-btn:hover{border-color:var(--teal);color:var(--text);}
+.ch-btn.primary{background:rgba(12,105,128,.15);border-color:rgba(12,105,128,.35);color:var(--teal2);}
+.ch-btn.primary:hover{background:rgba(12,105,128,.25);}
+.ch-btn.ig{background:linear-gradient(135deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);border-color:transparent;color:#fff;}
+.ch-btn.ig:hover{filter:brightness(1.1);color:#fff;}
+.ch-btn.ig:disabled{opacity:.6;cursor:not-allowed;filter:grayscale(.4);}
+.ch-btn.posted{background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.4);color:var(--green);}
+.ig-post-status{font-size:11px;color:var(--text3);margin-top:4px;}
+.ig-post-status a{color:var(--teal2);text-decoration:none;}
+.ig-post-status a:hover{text-decoration:underline;}
+.ch-expanded{background:var(--surf);border:1px solid var(--teal2);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+.ch-exp-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.ch-exp-title{font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ch-exp-date{font-size:11px;color:var(--text3);}
+.ch-slides-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;}
+.ch-slides-scroll::-webkit-scrollbar{height:4px;}
+.ch-slides-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.ch-slide-item{flex-shrink:0;display:flex;flex-direction:column;gap:5px;align-items:center;}
+.ch-slide-img{width:108px;height:135px;object-fit:cover;border-radius:7px;border:1px solid var(--border2);display:block;}
+.ch-slide-label{font-size:10px;color:var(--text3);text-align:center;}
+.ch-slide-dl{font-size:10px;padding:3px 8px;background:var(--surf3);border:1px solid var(--border2);border-radius:4px;color:var(--teal2);text-decoration:none;text-align:center;width:100%;display:block;transition:border-color .15s;}
+.ch-slide-dl:hover{border-color:var(--teal);}
+
+/* ── Growth Calendar ── */
+.gc-section{display:flex;flex-direction:column;gap:16px;}
+.gc-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.gc-week-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);}
+.gc-copy-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;background:rgba(12,105,128,.15);border:1px solid rgba(12,105,128,.35);color:var(--teal2);transition:all .15s;}
+.gc-copy-btn:hover{background:rgba(12,105,128,.25);}
+.gc-copy-btn.ok{background:rgba(34,197,94,.15);color:var(--green);border-color:rgba(34,197,94,.35);}
+.gc-table-wrap{background:var(--surf2);border:1px solid var(--border);border-radius:10px;overflow-x:auto;}
+.gc-table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:1100px;}
+.gc-table thead{background:var(--surf3);position:sticky;top:0;}
+.gc-table th{text-align:left;padding:9px 10px;font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border2);white-space:nowrap;}
+.gc-table td{padding:10px;border-top:1px solid var(--border);color:var(--text2);vertical-align:top;line-height:1.45;}
+.gc-table tbody tr:hover{background:rgba(255,255,255,.015);}
+.gc-table td.gc-td-day{font-weight:700;color:var(--text);white-space:nowrap;font-size:11px;letter-spacing:.4px;}
+.gc-table td.gc-td-date{color:var(--text3);white-space:nowrap;}
+.gc-table td.gc-td-topic{font-weight:600;color:var(--text);min-width:160px;}
+.gc-table td.gc-td-hook{font-style:italic;min-width:240px;}
+.gc-table td.gc-td-cta{color:var(--teal2);min-width:180px;}
+.gc-table td.gc-td-pkg{color:var(--amber);font-size:11px;}
+.gc-table td.gc-td-num{text-align:center;font-weight:600;font-size:12px;}
+.gc-num-v{color:var(--amber);}
+.gc-num-l{color:var(--green);}
+.gc-num-low{color:var(--text3);}
+.gc-table td.gc-td-notes{color:var(--text3);font-size:11px;min-width:160px;}
+.gc-type{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.4px;display:inline-block;}
+.gc-type-reel{background:rgba(239,68,68,.12);color:#f87171;}
+.gc-type-carousel{background:rgba(12,105,128,.15);color:var(--teal2);}
+.gc-type-static{background:rgba(156,163,175,.12);color:#9ca3af;}
+.gc-agent-badge{font-size:10px;padding:1px 7px;border-radius:3px;background:var(--surf3);color:var(--text3);border:1px solid var(--border);white-space:nowrap;}
+.gc-row-copy{padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;background:var(--surf3);border:1px solid var(--border);color:var(--text3);transition:all .15s;}
+.gc-row-copy:hover{border-color:var(--teal);color:var(--teal2);}
+.gc-row-copy.ok{background:rgba(34,197,94,.12);color:var(--green);border-color:rgba(34,197,94,.3);}
+.gc-hist{display:flex;flex-direction:column;gap:5px;}
+.gc-hist-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surf2);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:border-color .15s;}
+.gc-hist-item:hover{border-color:var(--teal);}
+.gc-hist-item.gc-hist-active{border-color:var(--teal2);background:rgba(12,105,128,.08);}
+.gc-hist-week{font-size:12px;font-weight:500;}
+.gc-hist-date{font-size:11px;color:var(--text3);}
+.gc-empty{text-align:center;padding:48px 24px;color:var(--text3);font-size:13px;}
+.gc-intel{background:linear-gradient(135deg,rgba(12,105,128,.08),rgba(245,197,24,.05));border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.gc-intel-hdr{display:flex;align-items:center;gap:8px;}
+.gc-intel-title{font-size:11px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--teal2);}
+.gc-intel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+.gc-intel-stat{display:flex;flex-direction:column;gap:2px;}
+.gc-intel-stat-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);}
+.gc-intel-stat-val{font-size:16px;font-weight:700;color:var(--text);}
+.gc-intel-stat-sub{font-size:11px;color:var(--text2);}
+.gc-intel-comps{font-size:11.5px;color:var(--text2);line-height:1.55;padding-top:8px;border-top:1px solid var(--border);}
+.gc-intel-comps strong{color:var(--text);}
+.gc-web{background:linear-gradient(135deg,rgba(245,197,24,.06),rgba(34,197,94,.04));border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+.gc-web-hdr{display:flex;align-items:center;gap:8px;}
+.gc-web-title{font-size:11px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--amber);}
+.gc-web-list{display:flex;flex-direction:column;gap:8px;font-size:11.5px;color:var(--text2);line-height:1.5;}
+.gc-web-item{padding:8px 10px;background:var(--surf2);border-radius:6px;border-left:2px solid var(--amber);}
+.gc-web-item-title{font-weight:600;color:var(--text);}
+.gc-web-item-src{color:var(--text3);font-size:11px;}
+.gc-web-item-items{color:var(--teal2);font-size:11px;margin-top:3px;}
+
+/* ── Shimmer ── */
+.shimmer{background:linear-gradient(90deg,var(--surf2) 25%,var(--surf3) 50%,var(--surf2) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:4px;}
+@keyframes shim{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:currentColor;border-radius:50%;animation:rot .7s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg);}}
+.hidden{display:none!important;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── Responsive (tablet + mobile) ───────────────────────────────────── */
+@media (max-width: 900px) {
+  body{overflow:auto;height:auto;min-height:100vh;-webkit-text-size-adjust:100%;}
+  .body{flex-direction:column;overflow:visible;flex:none;}
+
+  /* Header */
+  .hdr{padding:0 14px;height:48px;}
+  .logo{font-size:13px;gap:8px;}
+  .logo-ring{width:22px;height:22px;font-size:12px;}
+  .hdr-date{display:none;}
+  .pill{font-size:10px;padding:2px 8px;}
+
+  /* Sidebar → horizontal scrolling pill bar */
+  .sidebar{
+    width:100%;height:auto;flex-shrink:0;
+    border-right:none;border-bottom:1px solid var(--border);
+    flex-direction:row;overflow-x:auto;overflow-y:hidden;
+    padding:8px 8px;gap:4px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .sidebar::-webkit-scrollbar{height:0;}
+  .sb-label,.sb-divider,.sb-spacer{display:none;}
+  .ag-item{
+    flex-direction:column;align-items:center;gap:5px;
+    min-width:76px;padding:6px 8px;border-radius:9px;
+    flex-shrink:0;text-align:center;
+  }
+  .ag-item.active::before{display:none;}
+  .ag-item.active{background:rgba(12,105,128,.2);}
+  .ag-icon{width:38px;height:38px;font-size:18px;border-radius:10px;}
+  .ag-info{width:100%;}
+  .ag-name{
+    font-size:10.5px;line-height:1.2;white-space:normal;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .ag-sched{display:none;}
+  .ag-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;}
+
+  /* Content */
+  .content{padding:16px 14px 32px;gap:16px;overflow-y:visible;flex:none;}
+
+  /* Agent header */
+  .ag-hdr{flex-direction:column;align-items:stretch;gap:14px;}
+  .ag-hdr-left{gap:12px;}
+  .ag-hdr-icon{width:44px;height:44px;font-size:20px;border-radius:11px;}
+  .ag-title{font-size:17px;}
+  .ag-desc{font-size:12.5px;max-width:none;}
+  .btn-actions{width:100%;flex-wrap:wrap;}
+  .btn-run,.btn-sec,.btn-claude{min-height:42px;padding:10px 16px;font-size:13px;}
+
+  /* Pipeline steps */
+  .steps{flex-wrap:wrap;gap:6px;}
+  .step{font-size:11px;padding:5px 10px;}
+  .step-arrow{display:none;}
+
+  /* Generic forms */
+  .carousel-form{padding:14px;}
+  .form-row{gap:10px;}
+  .form-group{min-width:0;flex:1 1 100%;}
+  .style-opts{flex-wrap:wrap;}
+
+  /* GMB result */
+  .result-grid{grid-template-columns:1fr;}
+  .result-img{max-width:320px;align-self:center;}
+
+  /* Run detail */
+  .run-detail-body{grid-template-columns:1fr;}
+  .run-detail-img{max-width:300px;}
+
+  /* Carousel slide preview */
+  .slide-preview-wrap{flex-direction:column;}
+  .slide-preview{width:100%;max-width:340px;align-self:center;}
+  .caption-card{width:100%;}
+
+  /* Filter bars */
+  .hist-filters,.ch-filters{flex-wrap:wrap;}
+  .ch-bar{flex-direction:column;align-items:flex-start;}
+
+  /* History grids */
+  .hist-grid,.run-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;}
+  .hist-img,.hist-no-img{height:100px;}
+  .run-thumb,.run-no-thumb{height:115px;}
+  .ch-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+  .ch-thumb,.ch-thumb-ph{height:115px;}
+
+  /* Growth Calendar intel */
+  .gc-intel-grid{grid-template-columns:repeat(2,1fr);}
+  .gc-intel-stat-val{font-size:14px;}
+
+  /* Marketing posts — overrides win via !important since this block
+     ships in the global <style>, but .mp-* CSS is injected at runtime. */
+  .mp-form{padding:14px !important;}
+  .mp-form-row{flex-direction:column !important;align-items:stretch !important;gap:12px !important;}
+  .mp-form-group{width:100% !important;min-width:0 !important;flex:1 1 100% !important;}
+  .mp-model-toggle{width:100% !important;height:auto !important;}
+  .mp-model-btn{flex:1;min-height:44px !important;padding:10px 6px !important;font-size:11.5px !important;white-space:normal !important;}
+  .mp-generate-btn{width:100% !important;min-height:46px !important;justify-content:center !important;}
+  .mp-insp-grid{grid-template-columns:1fr 1fr !important;gap:10px !important;}
+  .mp-insp-preview{height:110px !important;}
+  .mp-insp-info{padding:10px !important;}
+  .mp-insp-name{font-size:12px !important;}
+  .mp-insp-tagline{font-size:10.5px !important;}
+  .mp-insp-meta,.mp-insp-best{font-size:10px !important;}
+  .mp-result{padding:14px !important;gap:12px !important;}
+  .mp-result-img{width:100% !important;height:auto !important;aspect-ratio:1;max-width:340px !important;align-self:center !important;}
+  .mp-result-info{width:100% !important;min-width:0 !important;}
+  .mp-result-dest{font-size:16px !important;}
+  .mp-history-thumb{width:54px !important;height:54px !important;}
+  .mp-section-hint{display:none !important;}
+  .mp-section-title{flex-wrap:wrap !important;}
+
+  /* Landing pages */
+  .lp-page-card,.lp-brief-card{flex-direction:column !important;align-items:stretch !important;gap:8px !important;}
+  .lp-page-actions{flex-wrap:wrap !important;width:100%;}
+  .lp-actions-bar{flex-direction:column !important;gap:8px !important;}
+  .lp-build-btn{width:100%;}
+  .lp-btn{min-height:38px;padding:8px 12px !important;font-size:12px !important;}
+}
+
+@media (max-width: 480px) {
+  .hdr{padding:0 12px;height:46px;}
+  .logo{font-size:12px;}
+  .pill{font-size:9.5px;padding:2px 7px;gap:4px;}
+  .content{padding:14px 12px 28px;}
+  .ag-item{min-width:68px;padding:5px 7px;}
+  .ag-icon{width:34px;height:34px;font-size:16px;}
+  .ag-name{font-size:9.5px;}
+  .ag-title{font-size:16px;}
+  .ag-desc{font-size:12px;}
+  .hist-grid,.run-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+  .gc-intel-grid{grid-template-columns:1fr;}
+  .mp-insp-grid{grid-template-columns:1fr !important;}
+  .mp-insp-preview{height:170px !important;}
+}
+
+/* ── Instagram pipeline ── */
+.ig-empty{padding:28px;color:#8aa3a2;font-size:13px;line-height:1.7;background:#fff;
+  border:1px solid #e3ecec;border-radius:10px;margin-top:14px}
+.ig-card{background:#fff;border:1px solid #e3ecec;border-radius:11px;padding:16px 18px;margin-top:14px}
+.ig-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.ig-slug{font-weight:700;font-size:14px;color:#13343b}
+.ig-cap{font-size:12px;color:#6c7f80;margin-top:3px;max-width:62ch}
+.ig-state{font-size:10px;font-weight:800;letter-spacing:1.4px;padding:5px 10px;border-radius:20px;white-space:nowrap}
+.ig-ok{background:#def5e6;color:#1d7a46}.ig-pass{background:#e3f0fb;color:#15618f}
+.ig-warn{background:#fdf0dc;color:#9a6a12}.ig-bad{background:#fde7e4;color:#a33521}
+.ig-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:11.5px;color:#6c7f80;margin-top:10px}
+.ig-fails{margin:10px 0 0 16px;font-size:11.5px;color:#a33521}
+.ig-strip{display:flex;gap:7px;overflow-x:auto;margin-top:13px;padding-bottom:6px}
+.ig-thumb{height:132px;width:auto;border-radius:6px;border:1px solid #e3ecec;cursor:pointer;flex:0 0 auto}
+.ig-thumb:hover{border-color:#00a8a8}
+.ig-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ig-acts button:disabled{opacity:.4;cursor:not-allowed}
+.ig-live{border-color:#e63946!important;color:#e63946!important}
+.ig-rej{color:#a33521!important}
+.ig-out{margin-top:11px;font-size:11px;white-space:pre-wrap;color:#55706f;max-height:260px;overflow:auto}
+.ig-brief{max-height:560px;background:#fff;border:1px solid #e3ecec;border-radius:10px;padding:16px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-ring">🌍</div>
+    DWT Agent Hub
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-date" id="hdrDate"></div>
+    <div class="pill"><div class="pill-dot"></div> Live on Railway</div>
+  </div>
+</header>
+
+<div class="body">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="content" id="content"></main>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+let agents = [];
+let selected = null;   // agent object or {id:'history'}
+let running = false;
+let runState = {};
+let carouselInsp = 5;
+let histFilter = 'all';
+let histRuns = [];
+let histDetail = null;
+let carouselFilter = 'all';
+let carouselRuns = [];
+let carouselExpanded = null;
+let growthCalendar = null;
+let growthHistory = [];
+let growthFilter = 'all';
+
+document.getElementById('hdrDate').textContent = new Date().toLocaleDateString('en-IN',{
+  weekday:'short',day:'numeric',month:'short',year:'numeric'
+});
+
+async function init() {
+  const resp = await fetch('/api/gmb/agents');
+  agents = await resp.json();
+  renderSidebar();
+  selectAgent('gmb-autopilot');
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  let html = '<div class="sb-label">Agents</div>';
+  agents.forEach(a => {
+    const isActive = selected?.id === a.id;
+    html += `
+      <div class="ag-item${isActive ? ' active' : ''}" onclick="selectAgent('${a.id}')">
+        <div class="ag-icon">${a.icon}</div>
+        <div class="ag-info">
+          <div class="ag-name">${a.name}</div>
+          <div class="ag-sched">${a.schedule}</div>
+        </div>
+        ${a.runnable ? '<div class="ag-dot"></div>' : ''}
+      </div>`;
+  });
+  html += `
+    <div class="sb-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Data</div>
+    <div class="ag-item${selected?.id === 'history' ? ' active' : ''}" onclick="selectHistory()">
+      <div class="ag-icon">🗂</div>
+      <div class="ag-info">
+        <div class="ag-name">Run History</div>
+        <div class="ag-sched">All past runs</div>
+      </div>
+    </div>`;
+  sb.innerHTML = html;
+}
+
+function selectAgent(id) {
+  selected = agents.find(a => a.id === id);
+  if (!selected) return;
+  histDetail = null;
+  renderSidebar();
+  renderAgentContent();
+  if (selected.id === 'gmb-autopilot') { loadGmbHistory(); renderGmbAuditShell(); renderGmbCompetitorShell(); renderGmbReviewsShell(); }
+  if (selected.id === 'carousel-pipeline') loadCarouselHistory();
+  if (selected.id === 'weekly-growth') loadGrowthCalendar();
+  if (selected.id === 'landing-pages') loadLandingPages();
+  if (selected.id === 'marketing-posts') loadMarketingPosts();
+  if (selected.id === 'skills-library') loadSkillsLibrary();
+  if (selected.id === 'instagram-pipeline') loadIgPipeline();
+}
+
+function selectHistory() {
+  selected = { id: 'history' };
+  histDetail = null;
+  renderSidebar();
+  renderHistoryView();
+  fetchHistory();
+}
+
+// ── Agent content ─────────────────────────────────────────────────────────
+function renderAgentContent() {
+  const c = document.getElementById('content');
+  const a = selected;
+  const tags = a.tags.map(t => `<span class="badge-tag">${t}</span>`).join('');
+
+  let actionHtml = '';
+  if (!a.runnable) {
+    actionHtml = `<div class="btn-claude">🖥 Run in Claude Code</div>`;
+  } else if (a.id === 'gmb-autopilot') {
+    actionHtml = `<div class="btn-actions">
+      <button class="btn-run" id="runBtn" onclick="startRun()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        Run Now
+      </button>
+      <button class="btn-sec" onclick="loadGmbHistory()">📋 Refresh History</button>
+    </div>`;
+  } else if (a.id === 'instagram-pipeline') {
+    actionHtml = `<div class="btn-actions">
+      <button class="btn-run" onclick="igRenderSpecs()">🎨 Render Ready Specs</button>
+      <button class="btn-sec" onclick="loadIgPipeline()">↻ Refresh Queue</button>
+    </div>`;
+  } else if (a.id === 'weekly-growth') {
+    actionHtml = `<div class="btn-actions">
+      <button class="btn-run" id="runBtn" onclick="startRun()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        Generate This Week's Plan
+      </button>
+      <button class="btn-sec" onclick="loadGrowthCalendar()">↻ Refresh</button>
+    </div>`;
+  }
+
+  c.innerHTML = `
+    <div class="ag-hdr">
+      <div>
+        <div class="ag-hdr-left">
+          <div class="ag-hdr-icon">${a.icon}</div>
+          <div>
+            <div class="ag-title">${a.name}</div>
+            <div class="ag-meta"><span class="badge-sched">⏱ ${a.schedule}</span>${tags}</div>
+          </div>
+        </div>
+        <div class="ag-desc">${a.description}</div>
+      </div>
+      ${actionHtml}
+    </div>
+
+    ${a.id === 'carousel-pipeline' ? renderCarouselForm() : ''}
+
+    ${a.runnable ? `
+    <div class="steps hidden" id="steps">
+      ${a.id === 'gmb-autopilot' ? `
+        <div class="step" id="s1"><div class="step-n">1</div> Prepare</div>
+        <span class="step-arrow">›</span>
+        <div class="step" id="s2"><div class="step-n">2</div> Generate Image</div>
+        <span class="step-arrow">›</span>
+        <div class="step" id="s3"><div class="step-n">3</div> Post to GMB</div>
+      ` : a.id === 'weekly-growth' ? `
+        <div class="step" id="s1"><div class="step-n">1</div> Fetch IG Data</div>
+        <span class="step-arrow">›</span>
+        <div class="step" id="s2"><div class="step-n">2</div> Research Web Trends</div>
+        <span class="step-arrow">›</span>
+        <div class="step" id="s3"><div class="step-n">3</div> Analyze</div>
+        <span class="step-arrow">›</span>
+        <div class="step" id="s4"><div class="step-n">4</div> Generate Calendar</div>
+      ` : `
+        <div class="step" id="s1"><div class="step-n">1</div> Research Topic</div>
+        <span class="step-arrow">›</span>
+        <div class="step" id="s2"><div class="step-n">2</div> Design Slides</div>
+        <span class="step-arrow">›</span>
+        <div class="step" id="s3"><div class="step-n">3</div> Complete</div>
+      `}
+    </div>
+
+    <div class="console hidden" id="console">
+      <div class="con-hdr">
+        <span class="con-title">Live Output</span>
+        <span class="con-status" id="con-status">Idle</span>
+      </div>
+      <div class="prog-bar" style="margin:0"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="con-body" id="con-body"></div>
+    </div>
+
+    <div id="result-panel" class="hidden"></div>
+    ` : `
+    <div class="info-box">
+      <div class="info-icon">🖥</div>
+      <div class="info-text">
+        <strong>Runs via Claude Code</strong>
+        Open your workspace and run: <code>Agent(subagent_type="${a.id}")</code>
+        or just describe what you want — Claude Code handles the rest.
+      </div>
+    </div>
+    `}
+
+    ${a.id === 'carousel-pipeline' ? `<div id="carousel-history-wrap"></div>` : ''}
+    ${a.id === 'weekly-growth' ? `<div id="growth-calendar-wrap"></div>` : ''}
+    ${a.id === 'landing-pages' ? `<div id="landing-pages-wrap"></div>` : ''}
+    ${a.id === 'marketing-posts' ? `<div id="marketing-posts-wrap"></div>` : ''}
+    ${a.id === 'skills-library' ? `<div id="skills-library-wrap"></div>` : ''}
+
+    ${a.id === 'gmb-autopilot' ? `
+    <div id="gmb-audit-wrap"></div>
+    <div id="gmb-competitor-wrap"></div>
+    <div id="gmb-reviews-wrap"></div>
+
+    <div>
+      <div class="sec-title">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Recent GBP Posts
+      </div>
+      <div class="hist-grid" id="hist-grid">
+        ${[1,2,3,4].map(() => `
+          <div class="hist-card">
+            <div class="shimmer" style="height:120px;border-radius:0"></div>
+            <div class="hist-body">
+              <div class="shimmer" style="width:55%;height:11px;margin-bottom:7px"></div>
+              <div class="shimmer" style="width:100%;height:11px;margin-bottom:4px"></div>
+              <div class="shimmer" style="width:80%;height:11px"></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    ` : ''}
+  `;
+}
+
+function renderCarouselForm() {
+  return `
+    <div class="carousel-form">
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">Topic hint <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(optional)</span></div>
+          <input class="form-input" id="topicInput" type="text" placeholder="e.g. monsoon hill stations, Vietnam hidden gems…">
+        </div>
+        <div class="form-group" style="flex:0;min-width:auto;">
+          <div class="form-label">Style</div>
+          <div class="style-opts">
+            <button class="style-btn" id="insp4Btn" onclick="setInsp(4)">Inspiration 4</button>
+            <button class="style-btn sel" id="insp5Btn" onclick="setInsp(5)">Inspiration 5</button>
+            <button class="style-btn" id="insp6Btn" onclick="setInsp(6)">Inspiration 6</button>
+            <button class="style-btn" id="insp7Btn" onclick="setInsp(7)">Inspiration 7</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button class="btn-run" id="runBtn" onclick="startRun()" style="width:fit-content">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          Generate Carousel
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function setInsp(n) {
+  carouselInsp = n;
+  document.getElementById('insp4Btn')?.classList.toggle('sel', n === 4);
+  document.getElementById('insp5Btn')?.classList.toggle('sel', n === 5);
+  document.getElementById('insp6Btn')?.classList.toggle('sel', n === 6);
+  document.getElementById('insp7Btn')?.classList.toggle('sel', n === 7);
+}
+
+// ── GMB Audit ────────────────────────────────────────────────────────────
+let gmbAuditState = { busy: false, result: null, error: null };
+
+function renderGmbAuditShell() {
+  const w = document.getElementById('gmb-audit-wrap');
+  if (!w) return;
+  w.innerHTML = `
+    <style>
+      .ga-card { background:var(--surf2); border:1px solid var(--border); border-radius:10px; padding:18px; margin-bottom:18px; }
+      .ga-hdr { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+      .ga-title { font-size:14px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:8px; }
+      .ga-run-btn {
+        padding:8px 16px; background:var(--teal); color:white; border:none;
+        border-radius:7px; cursor:pointer; font-weight:600; font-size:12.5px; min-height:38px;
+        display:inline-flex; align-items:center; gap:6px;
+      }
+      .ga-run-btn:hover { background:var(--teal2); }
+      .ga-run-btn:disabled { opacity:.6; cursor:not-allowed; }
+
+      .ga-score-row { display:flex; gap:18px; align-items:center; flex-wrap:wrap; padding:6px 0 14px; }
+      .ga-score-circle {
+        width:80px; height:80px; border-radius:50%;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        border:4px solid var(--teal); background:var(--surf);
+      }
+      .ga-score-circle.b- { border-color:var(--teal); }
+      .ga-score-circle.b-A { border-color:#22c55e; }
+      .ga-score-circle.b-B { border-color:var(--teal2); }
+      .ga-score-circle.b-C { border-color:var(--amber); }
+      .ga-score-circle.b-D, .ga-score-circle.b-F { border-color:var(--red); }
+      .ga-score-num { font-size:22px; font-weight:700; color:var(--text); line-height:1; }
+      .ga-score-max { font-size:10px; color:var(--text3); margin-top:2px; }
+      .ga-grade { font-size:24px; font-weight:800; color:var(--text); padding:0 6px; }
+
+      .ga-snapshot { display:flex; flex-direction:column; gap:3px; font-size:11.5px; color:var(--text2); }
+      .ga-snapshot strong { color:var(--text); }
+
+      .ga-breakdown { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:18px; }
+      .ga-dim { background:var(--surf); border:1px solid var(--border); border-radius:8px; padding:10px 12px; }
+      .ga-dim-name { font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text3); margin-bottom:4px; }
+      .ga-dim-bar { height:5px; background:var(--surf3); border-radius:3px; overflow:hidden; margin-top:4px; }
+      .ga-dim-fill { height:100%; background:var(--teal); border-radius:3px; transition:width .4s; }
+      .ga-dim-fill.f-good { background:#22c55e; }
+      .ga-dim-fill.f-warn { background:var(--amber); }
+      .ga-dim-fill.f-bad { background:var(--red); }
+      .ga-dim-val { font-size:12.5px; color:var(--text); font-weight:600; margin-top:2px; }
+
+      .ga-totals { display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--text2); padding:8px 0 14px; border-top:1px solid var(--border); }
+      .ga-totals span strong { color:var(--text); }
+
+      .ga-issues-title { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text3); margin-bottom:8px; }
+      .ga-issue { display:flex; gap:10px; padding:9px 11px; border-radius:7px; background:var(--surf); border-left:3px solid var(--border2); margin-bottom:6px; }
+      .ga-issue.sev-high { border-left-color:var(--red); }
+      .ga-issue.sev-med  { border-left-color:var(--amber); }
+      .ga-issue.sev-low  { border-left-color:var(--teal2); }
+      .ga-issue-sev { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; padding:2px 6px; border-radius:3px; flex-shrink:0; height:fit-content; }
+      .ga-issue-sev.sev-high { background:rgba(239,68,68,.15); color:#f87171; }
+      .ga-issue-sev.sev-med  { background:rgba(245,158,11,.15); color:var(--amber); }
+      .ga-issue-sev.sev-low  { background:rgba(15,143,175,.15); color:var(--teal2); }
+      .ga-issue-text { flex:1; font-size:12px; color:var(--text2); line-height:1.5; }
+      .ga-issue-text strong { color:var(--text); }
+    </style>
+
+    <div class="ga-card">
+      <div class="ga-hdr">
+        <div class="ga-title">📊 GMB Profile Audit</div>
+        <button class="ga-run-btn" id="ga-run-btn" onclick="runGmbAudit()" ${gmbAuditState.busy ? 'disabled' : ''}>
+          ${gmbAuditState.busy ? '<div class="spin"></div> Auditing...' : '🔍 Run Audit'}
+        </button>
+      </div>
+      <div id="ga-body">${renderGmbAuditBody()}</div>
+    </div>
+  `;
+}
+
+function renderGmbAuditBody() {
+  if (gmbAuditState.busy) {
+    return `<div style="color:var(--text3);font-size:12.5px;padding:20px 0;text-align:center">Fetching profile info, reviews, posts, photos, Q&A from Google Business Profile (~5-10s)...</div>`;
+  }
+  if (gmbAuditState.error) {
+    return `<div style="color:#f87171;font-size:12.5px;padding:12px;background:rgba(239,68,68,.06);border-radius:7px">⚠ ${gmbAuditState.error}</div>`;
+  }
+  if (!gmbAuditState.result) {
+    return `<div style="color:var(--text3);font-size:12.5px;padding:8px 0">Click <strong>Run Audit</strong> to score your GBP profile across 5 dimensions and get prioritized fixes.</div>`;
+  }
+  const r = gmbAuditState.result;
+  const gradeClass = `b-${r.grade.charAt(0)}`;
+
+  const dimensions = [
+    ['profile_completeness', 'Profile'],
+    ['visual_assets', 'Photos'],
+    ['post_cadence', 'Posts'],
+    ['review_engagement', 'Reviews'],
+    ['qa_coverage', 'Q&A'],
+  ];
+
+  const dimHtml = dimensions.map(([key, label]) => {
+    const d = r.breakdown[key];
+    const pct = d.max ? (d.score / d.max) : 0;
+    const fillClass = pct >= 0.8 ? 'f-good' : pct >= 0.5 ? 'f-warn' : 'f-bad';
+    return `
+      <div class="ga-dim">
+        <div class="ga-dim-name">${label}</div>
+        <div class="ga-dim-val">${d.score} / ${d.max}</div>
+        <div class="ga-dim-bar"><div class="ga-dim-fill ${fillClass}" style="width:${(pct*100).toFixed(0)}%"></div></div>
+      </div>
+    `;
+  }).join('');
+
+  const issuesHtml = (r.issues || []).map(i => `
+    <div class="ga-issue sev-${i.severity}">
+      <span class="ga-issue-sev sev-${i.severity}">${i.severity}</span>
+      <div class="ga-issue-text"><strong>${i.area}:</strong> ${i.fix}</div>
+    </div>
+  `).join('');
+
+  const t = r.totals || {};
+  const snap = r.profile_snapshot || {};
+
+  return `
+    <div class="ga-score-row">
+      <div class="ga-score-circle ${gradeClass}">
+        <div class="ga-score-num">${r.score}</div>
+        <div class="ga-score-max">/ ${r.max_score}</div>
+      </div>
+      <div class="ga-grade">${r.grade}</div>
+      <div class="ga-snapshot">
+        <div><strong>${snap.title || 'Profile'}</strong> · ${snap.primary_category || 'No category'}</div>
+        <div>${snap.website || 'No website'} · ${snap.phone || 'No phone'}</div>
+        <div style="color:var(--text3);max-width:360px">${snap.description_preview ? snap.description_preview + '…' : 'No description'}</div>
+      </div>
+    </div>
+
+    <div class="ga-breakdown">${dimHtml}</div>
+
+    <div class="ga-totals">
+      <span>📝 <strong>${t.posts ?? 0}</strong> posts</span>
+      <span>📸 <strong>${t.photos ?? 0}</strong> photos</span>
+      <span>⭐ <strong>${t.reviews ?? 0}</strong> reviews</span>
+      <span>❓ <strong>${t.questions ?? 0}</strong> Q&A</span>
+      <span>🏷 <strong>${t.categories ?? 0}</strong> categories</span>
+      <span>🧳 <strong>${t.services ?? 0}</strong> services</span>
+      <span>🏷 <strong>${t.attributes ?? 0}</strong> attributes</span>
+    </div>
+
+    <div class="ga-issues-title">Top fixes (sorted by severity)</div>
+    ${issuesHtml || '<div style="color:#22c55e;font-size:12.5px;padding:8px 0">✓ No issues — profile is in great shape.</div>'}
+  `;
+}
+
+async function runGmbAudit() {
+  if (gmbAuditState.busy) return;
+  gmbAuditState.busy = true;
+  gmbAuditState.error = null;
+  renderGmbAuditShell();
+  try {
+    const resp = await fetch('/api/gmb/audit');
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Audit failed');
+    gmbAuditState.result = data;
+  } catch (e) {
+    gmbAuditState.error = e.message;
+  } finally {
+    gmbAuditState.busy = false;
+    renderGmbAuditShell();
+  }
+}
+
+// ── GMB Competitor + Keyword Intel ─────────────────────────────────────────
+let gmbCompState  = { busy: false, result: null, error: null };
+let gmbThemeState = { busy: false, result: null, error: null, source: 'dwt' };
+
+function renderGmbCompetitorShell() {
+  // Always-attached: appended once after audit shell renders
+  let w = document.getElementById('gmb-competitor-wrap');
+  if (!w) return;
+  const compRows = renderCompetitorRows();
+  const themesBody = renderThemesBody();
+  w.innerHTML = `
+    <div class="ga-card">
+      <div class="ga-hdr">
+        <div class="ga-title">🏢 Competitor Intel (Apify · Google Maps)</div>
+        <button class="ga-run-btn" onclick="runCompetitorScrape(false)" ${gmbCompState.busy ? 'disabled' : ''}>
+          ${gmbCompState.busy ? '<div class="spin"></div> Scraping...' : '🔍 Run / Refresh'}
+        </button>
+      </div>
+      <div style="font-size:11.5px;color:var(--text3);margin-bottom:10px">
+        Pulls live Google Maps profile + recent reviews for Kesari, Veena World, Thomas Cook, SOTC, Girikand. Cached 7 days.
+      </div>
+      <div id="gmb-comp-body">${compRows}</div>
+    </div>
+
+    <div class="ga-card">
+      <div class="ga-hdr">
+        <div class="ga-title">💬 Review Keyword Themes (Claude)</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select onchange="gmbThemeState.source = this.value" class="form-input" style="padding:6px 10px;font-size:12px;background:var(--surf3);border:1px solid var(--border2);color:var(--text)">
+            <option value="dwt" ${gmbThemeState.source === 'dwt' ? 'selected' : ''}>DWT (own reviews)</option>
+            ${(gmbCompState.result?.competitors || []).filter(c => c.found).map(c => `
+              <option value="comp:${(c.place_name || c.name).replace(/"/g, '')}">${c.place_name || c.name}</option>
+            `).join('')}
+          </select>
+          <button class="ga-run-btn" onclick="runThemeExtraction()" ${gmbThemeState.busy ? 'disabled' : ''}>
+            ${gmbThemeState.busy ? '<div class="spin"></div> Analyzing...' : '🧠 Extract Themes'}
+          </button>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text3);margin-bottom:10px">
+        Claude reads up to 80 reviews and surfaces the top praise themes, complaint themes, and quotable lines for marketing.
+      </div>
+      <div id="gmb-theme-body">${themesBody}</div>
+    </div>
+  `;
+}
+
+function renderCompetitorRows() {
+  if (gmbCompState.busy) return `<div style="color:var(--text3);font-size:12.5px;padding:20px 0;text-align:center">Apify scrape — ~30-90s per competitor. Cached results return instantly.</div>`;
+  if (gmbCompState.error) return `<div style="color:#f87171;font-size:12.5px;padding:12px;background:rgba(239,68,68,.06);border-radius:7px">⚠ ${gmbCompState.error}</div>`;
+  if (!gmbCompState.result) return `<div style="color:var(--text3);font-size:12.5px;padding:8px 0">Click <strong>Run / Refresh</strong> to scrape competitor GMB profiles.</div>`;
+
+  const comps = gmbCompState.result.competitors || [];
+  if (!comps.length) return `<div style="color:var(--text3);font-size:12.5px">No competitors returned.</div>`;
+
+  return `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;color:var(--text2)">
+      <thead>
+        <tr style="background:var(--surf);color:var(--text3);font-size:10.5px;text-transform:uppercase;letter-spacing:.4px">
+          <th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)">Business</th>
+          <th style="text-align:center;padding:8px 10px;border-bottom:1px solid var(--border)">Rating</th>
+          <th style="text-align:center;padding:8px 10px;border-bottom:1px solid var(--border)">Reviews</th>
+          <th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)">Category</th>
+          <th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)">Website</th>
+          <th style="text-align:center;padding:8px 10px;border-bottom:1px solid var(--border)">Cache</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${comps.map(c => {
+          if (!c.found) {
+            return `<tr><td colspan="6" style="padding:10px;color:#f87171;border-bottom:1px solid var(--border)">⚠ ${c.name}: ${c.error || 'not found'}</td></tr>`;
+          }
+          const rating = c.rating ? c.rating.toFixed(1) : '—';
+          const ratingColor = c.rating >= 4.5 ? '#22c55e' : c.rating >= 4.0 ? 'var(--amber)' : 'var(--red)';
+          const cat = (c.categories || [])[0] || '—';
+          return `
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:9px 10px;color:var(--text);font-weight:600">${c.place_name || c.name}</td>
+              <td style="text-align:center;padding:9px 10px;color:${ratingColor};font-weight:700">${rating}★</td>
+              <td style="text-align:center;padding:9px 10px">${(c.review_count ?? 0).toLocaleString()}</td>
+              <td style="padding:9px 10px;color:var(--text3);font-size:11px">${cat}</td>
+              <td style="padding:9px 10px"><a href="${c.website || '#'}" target="_blank" style="color:var(--teal2);text-decoration:none;font-size:11px">${c.website ? (new URL(c.website).hostname) : '—'}</a></td>
+              <td style="text-align:center;padding:9px 10px;font-size:10px;color:var(--text3)">${c.from_cache ? '📦 cache' : '🆕 fresh'}</td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:11px;color:var(--text3)">
+      💡 Each competitor's reviews are now cached. Pick one in the dropdown above to extract their themes via Claude.
+    </div>
+  `;
+}
+
+function renderThemesBody() {
+  if (gmbThemeState.busy) return `<div style="color:var(--text3);font-size:12.5px;padding:20px 0;text-align:center">Claude reading reviews and clustering themes...</div>`;
+  if (gmbThemeState.error) return `<div style="color:#f87171;font-size:12.5px;padding:12px;background:rgba(239,68,68,.06);border-radius:7px">⚠ ${gmbThemeState.error}</div>`;
+  if (!gmbThemeState.result) return `<div style="color:var(--text3);font-size:12.5px;padding:8px 0">Click <strong>Extract Themes</strong> to surface praise/complaint themes + quotable lines.</div>`;
+
+  const r = gmbThemeState.result;
+  const praise = r.praise_themes || [];
+  const complaints = r.complaint_themes || [];
+  const quotes = r.notable_quotes || [];
+
+  const themeCard = (t, color) => `
+    <div style="background:var(--surf);border-left:3px solid ${color};border-radius:6px;padding:8px 11px;margin-bottom:6px">
+      <div style="font-size:12.5px;color:var(--text);font-weight:600">${t.theme} <span style="color:var(--text3);font-weight:400;font-size:11px">(${t.mentions} mentions)</span></div>
+      ${t.example ? `<div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:3px">"${t.example}"</div>` : ''}
+    </div>
+  `;
+
+  return `
+    <div style="font-size:11.5px;color:var(--text3);margin-bottom:8px">
+      Analyzed <strong>${r.review_count}</strong> reviews from <strong>${r.brand_label}</strong>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div>
+        <div class="ga-issues-title" style="color:#22c55e">✅ Praise themes (${praise.length})</div>
+        ${praise.map(t => themeCard(t, '#22c55e')).join('') || '<div style="color:var(--text3);font-size:12px">None extracted.</div>'}
+      </div>
+      <div>
+        <div class="ga-issues-title" style="color:#f87171">⚠ Complaint themes (${complaints.length})</div>
+        ${complaints.map(t => themeCard(t, '#f87171')).join('') || '<div style="color:var(--text3);font-size:12px">None — all praise!</div>'}
+      </div>
+    </div>
+
+    <div class="ga-issues-title">💎 Quotable lines (use in marketing)</div>
+    ${quotes.map(q => `
+      <div style="background:linear-gradient(135deg,rgba(245,197,24,.06),rgba(12,105,128,.06));border:1px solid var(--border2);border-radius:7px;padding:10px 12px;margin-bottom:6px">
+        <div style="font-size:13px;color:var(--text);font-style:italic;line-height:1.5">"${q.quote}"</div>
+        <div style="font-size:10.5px;color:var(--text3);margin-top:5px">${q.stars}★ · ${q.topic}</div>
+      </div>
+    `).join('') || '<div style="color:var(--text3);font-size:12px">No standout quotes.</div>'}
+  `;
+}
+
+async function runCompetitorScrape(force) {
+  if (gmbCompState.busy) return;
+  gmbCompState.busy = true;
+  gmbCompState.error = null;
+  renderGmbCompetitorShell();
+  try {
+    const resp = await fetch('/api/gmb/competitors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ force_refresh: !!force }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Competitor scrape failed');
+    gmbCompState.result = data;
+  } catch (e) {
+    gmbCompState.error = e.message;
+  } finally {
+    gmbCompState.busy = false;
+    renderGmbCompetitorShell();
+  }
+}
+
+async function runThemeExtraction() {
+  if (gmbThemeState.busy) return;
+  gmbThemeState.busy = true;
+  gmbThemeState.error = null;
+  renderGmbCompetitorShell();
+  const src = gmbThemeState.source || 'dwt';
+  let body = { source: 'dwt' };
+  if (src.startsWith('comp:')) {
+    body = { source: 'competitor', competitor_name: src.slice(5) };
+  }
+  try {
+    const resp = await fetch('/api/gmb/keyword-themes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Theme extraction failed');
+    gmbThemeState.result = data;
+  } catch (e) {
+    gmbThemeState.error = e.message;
+  } finally {
+    gmbThemeState.busy = false;
+    renderGmbCompetitorShell();
+  }
+}
+
+// ── GMB Review Auto-Reply (draft → approve → post) ─────────────────────────
+let gmbReviewsState = { busy: false, reviews: null, error: null, edits: {}, posting: {}, postedOk: {} };
+
+function renderGmbReviewsShell() {
+  const w = document.getElementById('gmb-reviews-wrap');
+  if (!w) return;
+  w.innerHTML = `
+    <div class="ga-card">
+      <div class="ga-hdr">
+        <div class="ga-title">💬 Reviews — Auto-Draft & Reply</div>
+        <button class="ga-run-btn" onclick="loadGmbReviews()" ${gmbReviewsState.busy ? 'disabled' : ''}>
+          ${gmbReviewsState.busy ? '<div class="spin"></div> Drafting...' : '✨ Load & Draft Replies'}
+        </button>
+      </div>
+      <div style="font-size:11.5px;color:var(--text3);margin-bottom:10px">
+        Pulls recent reviews from GBP. Claude drafts a personalized reply for each unreplied review. You edit, then click Post to publish. Nothing posts automatically.
+      </div>
+      <div id="gmb-reviews-body">${renderGmbReviewsBody()}</div>
+    </div>
+  `;
+}
+
+function renderGmbReviewsBody() {
+  if (gmbReviewsState.busy) return `<div style="color:var(--text3);font-size:12.5px;padding:20px 0;text-align:center">Fetching reviews from GBP + Claude drafting replies (~30-90s for batch)...</div>`;
+  if (gmbReviewsState.error) return `<div style="color:#f87171;font-size:12.5px;padding:12px;background:rgba(239,68,68,.06);border-radius:7px">⚠ ${gmbReviewsState.error}</div>`;
+  if (!gmbReviewsState.reviews) return `<div style="color:var(--text3);font-size:12.5px;padding:8px 0">Click <strong>Load & Draft Replies</strong> to fetch reviews + auto-draft for unreplied ones.</div>`;
+
+  const reviews = gmbReviewsState.reviews;
+  if (!reviews.length) return `<div style="color:var(--text3);font-size:12.5px">No reviews returned.</div>`;
+
+  const pending = reviews.filter(r => r.needs_reply);
+  const replied = reviews.filter(r => !r.needs_reply);
+
+  return `
+    <div style="font-size:11.5px;color:var(--text2);margin-bottom:12px">
+      <strong>${pending.length}</strong> pending · <strong>${replied.length}</strong> already replied · <strong>${reviews.length}</strong> total
+    </div>
+    ${pending.length ? `<div class="ga-issues-title">Needs reply</div>${pending.map(renderReviewCard).join('')}` : '<div style="color:#22c55e;font-size:12.5px;margin-bottom:14px">✓ All recent reviews are replied to.</div>'}
+    ${replied.length ? `<div class="ga-issues-title" style="margin-top:18px">Already replied (showing ${Math.min(5, replied.length)})</div>${replied.slice(0, 5).map(renderReviewCard).join('')}` : ''}
+  `;
+}
+
+function renderReviewCard(r) {
+  const stars = '★'.repeat(r.stars || 0) + '☆'.repeat(5 - (r.stars || 0));
+  const starColor = r.stars >= 4 ? '#22c55e' : r.stars >= 3 ? 'var(--amber)' : 'var(--red)';
+  const editKey = r.review_id;
+  const currentDraft = editKey in gmbReviewsState.edits ? gmbReviewsState.edits[editKey] : (r.draft_reply || '');
+  const posting = gmbReviewsState.posting[editKey];
+  const posted = gmbReviewsState.postedOk[editKey];
+  const isAlreadyReplied = !r.needs_reply;
+
+  return `
+    <div style="background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
+        ${r.reviewer_photo ? `<img src="${r.reviewer_photo}" style="width:32px;height:32px;border-radius:50%;flex-shrink:0" onerror="this.style.display='none'">` : `<div style="width:32px;height:32px;border-radius:50%;background:var(--surf3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${(r.reviewer_name||'?').charAt(0)}</div>`}
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-weight:600;color:var(--text);font-size:12.5px">${r.reviewer_name}</span>
+            <span style="color:${starColor};font-size:11.5px;letter-spacing:1px">${stars}</span>
+            <span style="color:var(--text3);font-size:11px">${relTime(r.created_at)}</span>
+          </div>
+          <div style="color:var(--text2);font-size:12px;line-height:1.5;margin-top:4px;white-space:pre-wrap">${(r.comment || '<em style="color:var(--text3)">(no comment)</em>')}</div>
+        </div>
+      </div>
+
+      ${isAlreadyReplied ? `
+        <div style="background:var(--surf3);border-left:3px solid var(--teal2);padding:8px 11px;border-radius:5px;margin-top:8px">
+          <div style="font-size:10px;font-weight:600;color:var(--teal2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">DWT replied</div>
+          <div style="font-size:11.5px;color:var(--text2);line-height:1.5;white-space:pre-wrap">${r.owner_reply}</div>
+        </div>
+      ` : posted ? `
+        <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);padding:10px 12px;border-radius:6px;margin-top:8px">
+          <div style="font-size:11.5px;color:#22c55e;font-weight:600">✓ Reply posted successfully</div>
+        </div>
+      ` : `
+        <div style="margin-top:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">Claude draft (editable)</span>
+            <button onclick="redraftReview('${editKey}')" style="font-size:10.5px;padding:3px 8px;background:var(--surf3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">🔄 Re-draft</button>
+          </div>
+          <textarea
+            id="reply-${editKey}"
+            oninput="gmbReviewsState.edits['${editKey}'] = this.value"
+            style="width:100%;padding:9px 11px;background:var(--surf3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12.5px;font-family:inherit;line-height:1.5;min-height:64px;resize:vertical"
+            rows="3"
+          >${currentDraft.replace(/</g, '&lt;')}</textarea>
+          <div style="display:flex;gap:8px;margin-top:6px;justify-content:flex-end">
+            <button onclick="postReviewReply('${editKey}')" ${posting ? 'disabled' : ''} style="padding:6px 14px;background:${posting ? 'var(--surf3)' : 'var(--teal)'};color:white;border:none;border-radius:6px;font-size:11.5px;font-weight:600;cursor:${posting ? 'not-allowed' : 'pointer'};display:inline-flex;align-items:center;gap:5px">
+              ${posting ? '<div class="spin"></div> Posting...' : '📤 Post Reply'}
+            </button>
+          </div>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+async function loadGmbReviews() {
+  if (gmbReviewsState.busy) return;
+  gmbReviewsState.busy = true;
+  gmbReviewsState.error = null;
+  renderGmbReviewsShell();
+  try {
+    const resp = await fetch('/api/gmb/reviews?draft=true&limit=20');
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Load failed');
+    gmbReviewsState.reviews = data.reviews || [];
+  } catch (e) {
+    gmbReviewsState.error = e.message;
+  } finally {
+    gmbReviewsState.busy = false;
+    renderGmbReviewsShell();
+  }
+}
+
+async function redraftReview(reviewId) {
+  const r = (gmbReviewsState.reviews || []).find(x => x.review_id === reviewId);
+  if (!r) return;
+  const ta = document.getElementById(`reply-${reviewId}`);
+  if (ta) ta.disabled = true;
+  try {
+    const resp = await fetch('/api/gmb/reviews/draft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comment: r.comment, stars: r.stars, reviewer_name: r.reviewer_name }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Draft failed');
+    gmbReviewsState.edits[reviewId] = data.draft_reply;
+  } catch (e) {
+    alert('Re-draft failed: ' + e.message);
+  } finally {
+    if (ta) ta.disabled = false;
+    renderGmbReviewsShell();
+  }
+}
+
+async function postReviewReply(reviewId) {
+  const r = (gmbReviewsState.reviews || []).find(x => x.review_id === reviewId);
+  if (!r) return;
+  const replyText = (reviewId in gmbReviewsState.edits) ? gmbReviewsState.edits[reviewId] : (r.draft_reply || '');
+  if (!replyText.trim()) { alert('Reply is empty.'); return; }
+  if (!confirm(`Post this reply to ${r.reviewer_name}'s review on Google?\n\n"${replyText}"`)) return;
+
+  gmbReviewsState.posting[reviewId] = true;
+  renderGmbReviewsShell();
+  try {
+    const resp = await fetch('/api/gmb/reviews/reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ review_name: r.review_name, reply_text: replyText }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Post failed');
+    gmbReviewsState.postedOk[reviewId] = true;
+  } catch (e) {
+    alert('Post failed: ' + e.message);
+  } finally {
+    gmbReviewsState.posting[reviewId] = false;
+    renderGmbReviewsShell();
+  }
+}
+
+// ── GMB GBP History (from GBP API) ────────────────────────────────────────
+async function loadGmbHistory() {
+  const grid = document.getElementById('hist-grid');
+  if (!grid) return;
+  try {
+    const resp = await fetch('/api/gmb/history');
+    const { posts } = await resp.json();
+    if (!posts?.length) {
+      grid.innerHTML = '<p style="color:var(--text3);font-size:13px;grid-column:1/-1">No posts found.</p>';
+      return;
+    }
+    const DESTS = ['Kashmir','Vietnam','Dubai','Thailand','Ladakh','Singapore','Amarnath'];
+    grid.innerHTML = posts.map(p => {
+      const dest = DESTS.find(d => p.summary?.includes(d)) || 'Post';
+      return `
+        <div class="hist-card">
+          ${p.mediaUrl
+            ? `<img class="hist-img" src="${p.mediaUrl}" alt="${dest}" loading="lazy">`
+            : `<div class="hist-no-img">🗺️</div>`}
+          <div class="hist-body">
+            <div class="hist-top"><span class="hist-dest">${dest}</span><span class="hist-time">${relTime(p.createTime)}</span></div>
+            <div class="hist-preview">${(p.summary||'').slice(0,100)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch {
+    grid.innerHTML = '<p style="color:var(--text3);font-size:13px;grid-column:1/-1">Could not load history.</p>';
+  }
+}
+
+// ── All Run History view ───────────────────────────────────────────────────
+function renderHistoryView() {
+  const c = document.getElementById('content');
+  c.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <div>
+        <div class="ag-title" style="font-size:18px">Run History</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px">All past GMB and Carousel runs</div>
+      </div>
+      <button class="btn-sec" onclick="fetchHistory()">↻ Refresh</button>
+    </div>
+    <div class="hist-filters">
+      <button class="hist-filter${histFilter==='all'?' active':''}" onclick="setHistFilter('all')">All Runs</button>
+      <button class="hist-filter${histFilter==='gmb'?' active':''}" onclick="setHistFilter('gmb')">📍 GMB</button>
+      <button class="hist-filter${histFilter==='carousel'?' active':''}" onclick="setHistFilter('carousel')">🎠 Carousel</button>
+    </div>
+    <div id="run-grid-wrap">
+      <div class="run-grid" id="run-grid">
+        ${[1,2,3,4,5,6].map(() => `
+          <div class="run-card">
+            <div class="shimmer" style="height:130px;border-radius:0"></div>
+            <div class="run-body">
+              <div class="shimmer" style="width:40%;height:10px;margin-bottom:8px"></div>
+              <div class="shimmer" style="width:70%;height:12px;margin-bottom:5px"></div>
+              <div class="shimmer" style="width:50%;height:10px"></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+async function fetchHistory() {
+  if (selected?.id !== 'history') return;
+  try {
+    const wf = histFilter === 'all' ? '' : `?workflow=${histFilter}`;
+    const resp = await fetch(`/api/history${wf}`);
+    const { runs } = await resp.json();
+    histRuns = runs || [];
+    renderRunGrid();
+  } catch (e) {
+    const g = document.getElementById('run-grid');
+    if (g) g.innerHTML = `<p style="color:var(--red);font-size:13px;grid-column:1/-1">Failed to load history: ${e.message}</p>`;
+  }
+}
+
+function setHistFilter(f) {
+  histFilter = f;
+  // re-render filter buttons
+  document.querySelectorAll('.hist-filter').forEach(el => {
+    el.classList.toggle('active', el.textContent.toLowerCase().includes(f) || (f === 'all' && el.textContent === 'All Runs'));
+  });
+  fetchHistory();
+}
+
+function renderRunGrid() {
+  const wrap = document.getElementById('run-grid-wrap');
+  if (!wrap) return;
+
+  if (!histRuns.length) {
+    wrap.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>No runs yet. Run an agent to see history here.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = `<div class="run-grid" id="run-grid">${histRuns.map((r, i) => renderRunCard(r, i)).join('')}</div>`;
+}
+
+function renderRunCard(r, i) {
+  const isGmb = r.workflow === 'gmb';
+  const res = r.result || {};
+  const thumbUrl = isGmb
+    ? (res.image_url || res.local_image_url || null)
+    : (res.slides?.[0]?.url || null);
+  const topic = r.topic || '—';
+  const ok = r.status === 'complete';
+  const dt = r.completed_at || r.created_at;
+
+  return `
+    <div class="run-card" onclick="showRunDetail(${i})">
+      ${thumbUrl
+        ? `<img class="run-thumb" src="${thumbUrl}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : ''}
+      <div class="run-no-thumb" style="${thumbUrl ? 'display:none' : ''}">${isGmb ? '📍' : '🎠'}</div>
+      <div class="run-body">
+        <div class="run-top">
+          <span class="wf-badge ${isGmb ? 'wf-gmb' : 'wf-carousel'}">${isGmb ? 'GMB' : 'Carousel'}</span>
+          <span class="${ok ? 'run-status-ok' : 'run-status-fail'}">${ok ? '✓ Done' : '✗ Failed'}</span>
+        </div>
+        <div class="run-topic">${topic}</div>
+        <div class="run-meta">${relTime(dt)}</div>
+      </div>
+    </div>`;
+}
+
+function showRunDetail(i) {
+  const r = histRuns[i];
+  if (!r) return;
+  histDetail = r;
+  const c = document.getElementById('content');
+  const isGmb = r.workflow === 'gmb';
+  const res = r.result || {};
+  const ok = r.status === 'complete';
+  const dt = r.completed_at || r.created_at;
+
+  let detailBody = '';
+  if (isGmb) {
+    const imgUrl = res.image_url || res.local_image_url;
+    detailBody = `
+      <div class="run-detail-body">
+        <div>
+          <div class="run-detail-img">
+            ${imgUrl
+              ? `<img src="${imgUrl}" alt="GMB Image">`
+              : `<div style="height:200px;display:flex;align-items:center;justify-content:center;background:var(--surf3);font-size:40px">🗺️</div>`}
+          </div>
+          ${res.post_name ? `<div style="font-size:11px;color:var(--text3);margin-top:6px;word-break:break-all">${res.post_name}</div>` : ''}
+        </div>
+        <div class="run-detail-info">
+          <div class="run-kv">
+            <div class="run-kv-label">Destination</div>
+            <div class="run-kv-val">${res.destination || '—'} <span class="tmpl-badge" style="margin-left:6px">${res.template || ''}</span></div>
+          </div>
+          <div class="run-kv">
+            <div class="run-kv-label">Posted</div>
+            <div class="run-kv-val">${fmtDate(dt)}</div>
+          </div>
+          <div class="run-kv">
+            <div class="run-kv-label">Post Text</div>
+            <div class="run-kv-val pre">${res.post_text || r.error || '—'}</div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    const slides = res.slides || [];
+    const slideItems = slides.map((s, si) => {
+      const fname = s.filename || `slide-${si+1}.png`;
+      const dlUrl = s.url?.startsWith('http') ? s.url : `${s.url}?download=true`;
+      const label = fname.replace('slide-','').replace('.png','').replace(/^\d+-/,'') || `${si+1}`;
+      return `<div class="ch-slide-item">
+        <img class="ch-slide-img" src="${s.url}" loading="lazy">
+        <div class="ch-slide-label">${label}</div>
+        <a class="ch-slide-dl" href="${dlUrl}" download="${fname}">↓ Download</a>
+      </div>`;
+    }).join('');
+    detailBody = `
+      <div class="run-detail-info" style="grid-column:1/-1">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div class="run-kv">
+            <div class="run-kv-label">Topic</div>
+            <div class="run-kv-val">${res.topic || r.topic || '—'} · ${fmtDate(dt)} · ${slides.length} slides</div>
+          </div>
+          <a class="ch-btn primary" href="/api/slides/${r.id}/download-all.zip" download="carousel-${r.id}.zip">⬇ Download All ${slides.length} Slides</a>
+        </div>
+        ${slides.length ? `<div class="ch-slides-scroll">${slideItems}</div>` : ''}
+        ${res.caption ? `<div class="run-kv"><div class="run-kv-label">Caption</div><div class="run-kv-val pre">${(res.caption || '').slice(0,600)}</div></div>` : ''}
+        ${r.error ? `<div class="run-kv-val" style="color:var(--red)">${r.error}</div>` : ''}
+      </div>`;
+  }
+
+  c.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn-back" onclick="backToHistory()">← Back</button>
+      <div class="ag-title" style="font-size:16px">${r.topic || 'Run Detail'}</div>
+      <span class="wf-badge ${isGmb ? 'wf-gmb' : 'wf-carousel'}" style="margin-left:4px">${isGmb ? 'GMB' : 'Carousel'}</span>
+      <span class="${ok ? 'badge-ok' : 'badge-fail'}">${ok ? '✓ Complete' : '✗ Failed'}</span>
+    </div>
+    <div class="run-detail">
+      <div style="display:grid;grid-template-columns:${isGmb ? '200px 1fr' : '1fr'};gap:16px">
+        ${detailBody}
+      </div>
+    </div>
+  `;
+}
+
+function backToHistory() {
+  histDetail = null;
+  renderHistoryView();
+  fetchHistory();
+}
+
+// ── Carousel History ──────────────────────────────────────────────────────
+async function loadCarouselHistory() {
+  carouselExpanded = null;
+  renderCarouselHistoryShell();
+  try {
+    const resp = await fetch('/api/history?workflow=carousel&limit=100');
+    const { runs } = await resp.json();
+    carouselRuns = (runs || []).filter(r => r.status === 'complete');
+    renderCarouselRuns();
+  } catch {
+    const w = document.getElementById('carousel-history-wrap');
+    if (w) w.innerHTML = '<p style="color:var(--text3);font-size:13px">Could not load history.</p>';
+  }
+}
+
+function renderCarouselHistoryShell() {
+  const w = document.getElementById('carousel-history-wrap');
+  if (!w) return;
+  w.innerHTML = `
+    <div class="ch-section">
+      <div class="ch-bar">
+        <div class="sec-title" style="margin:0">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Past Carousel Runs
+        </div>
+        <div class="ch-filters">
+          <button class="ch-filter${carouselFilter==='all'?' active':''}" onclick="setCarouselFilter('all')">All</button>
+          <button class="ch-filter${carouselFilter==='7'?' active':''}" onclick="setCarouselFilter('7')">Last 7 Days</button>
+          <button class="ch-filter${carouselFilter==='30'?' active':''}" onclick="setCarouselFilter('30')">Last 30 Days</button>
+          <button class="ch-filter${carouselFilter==='month'?' active':''}" onclick="setCarouselFilter('month')">This Month</button>
+        </div>
+      </div>
+      <div class="ch-grid" id="ch-grid">
+        ${[1,2,3,4].map(()=>`
+          <div class="ch-card">
+            <div class="shimmer" style="height:136px;border-radius:0"></div>
+            <div class="ch-body">
+              <div class="shimmer" style="width:65%;height:12px;margin-bottom:7px"></div>
+              <div class="shimmer" style="width:45%;height:10px;margin-bottom:8px"></div>
+              <div style="display:flex;gap:6px"><div class="shimmer" style="width:70px;height:26px;border-radius:6px"></div><div class="shimmer" style="width:90px;height:26px;border-radius:6px"></div></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function setCarouselFilter(f) {
+  carouselFilter = f;
+  document.querySelectorAll('.ch-filter').forEach(el => {
+    const map = {'all':'All','7':'Last 7 Days','30':'Last 30 Days','month':'This Month'};
+    el.classList.toggle('active', el.textContent === map[f]);
+  });
+  carouselExpanded = null;
+  renderCarouselRuns();
+}
+
+// ── Instagram posting (manual per-carousel) ──────────────────────────────
+function _renderIGButton(r) {
+  const ig = (r.result || {}).instagram;
+  if (ig && ig.success && ig.permalink) {
+    return `<a class="ch-btn posted" href="${ig.permalink}" target="_blank">✓ Posted to Instagram</a>`;
+  }
+  return `<button class="ch-btn ig" id="ig-btn-${r.id}" onclick="postCarouselToInstagram('${r.id}', this)">📸 Post to Instagram</button>`;
+}
+
+function _renderIGStatus(r) {
+  const ig = (r.result || {}).instagram;
+  if (!ig) return '';
+  if (ig.success && ig.permalink) {
+    return `<div class="ig-post-status">Posted ${_relTime(ig.posted_at)} · <a href="${ig.permalink}" target="_blank">view on Instagram ↗</a></div>`;
+  }
+  if (ig.error) {
+    return `<div class="ig-post-status" style="color:var(--red)">Last attempt failed: ${ig.error.slice(0, 120)}</div>`;
+  }
+  return '';
+}
+
+async function postCarouselToInstagram(runId, btnEl) {
+  if (!confirm('Post this carousel to Instagram now?')) return;
+  const originalText = btnEl.textContent;
+  btnEl.disabled = true;
+  btnEl.textContent = '⏳ Posting…';
+  try {
+    const resp = await fetch(`/api/instagram/post/${runId}`, { method: 'POST' });
+    const data = await resp.json();
+    if (resp.ok && data.success) {
+      btnEl.textContent = '✓ Posted!';
+      btnEl.classList.add('posted');
+      btnEl.classList.remove('ig');
+      setTimeout(loadCarouselHistory, 1500);
+    } else {
+      const err = (data.detail || data.error || 'Unknown error').toString();
+      alert(`Instagram post failed:\n\n${err}`);
+      btnEl.disabled = false;
+      btnEl.textContent = originalText;
+    }
+  } catch (e) {
+    alert(`Network error: ${e.message}`);
+    btnEl.disabled = false;
+    btnEl.textContent = originalText;
+  }
+}
+
+function _filterCarouselRuns() {
+  if (carouselFilter === 'all') return carouselRuns;
+  const now = Date.now();
+  if (carouselFilter === '7')  return carouselRuns.filter(r => now - new Date(r.created_at) < 7*86400000);
+  if (carouselFilter === '30') return carouselRuns.filter(r => now - new Date(r.created_at) < 30*86400000);
+  if (carouselFilter === 'month') {
+    const m = new Date().getMonth(), y = new Date().getFullYear();
+    return carouselRuns.filter(r => { const d = new Date(r.created_at); return d.getMonth()===m && d.getFullYear()===y; });
+  }
+  return carouselRuns;
+}
+
+function renderCarouselRuns() {
+  const grid = document.getElementById('ch-grid');
+  if (!grid) return;
+  const runs = _filterCarouselRuns();
+  if (!runs.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🎠</div>No carousel runs yet for this period.</div>`;
+    return;
+  }
+  let html = '';
+  runs.forEach((r, i) => {
+    const res = r.result || {};
+    const slides = res.slides || [];
+    const thumb = slides[0]?.url || null;
+    const isOpen = carouselExpanded === i;
+    html += `
+      <div class="ch-card${isOpen?' open':''}">
+        ${thumb
+          ? `<img class="ch-thumb" src="${thumb}" onclick="toggleCarouselRun(${i})" loading="lazy">`
+          : `<div class="ch-thumb-ph" onclick="toggleCarouselRun(${i})">🎠</div>`}
+        <div class="ch-body">
+          <div class="ch-topic">${r.topic || 'Carousel'}</div>
+          <div class="ch-meta">${slides.length} slides · ${fmtDate(r.created_at)}</div>
+          <div class="ch-btns">
+            <button class="ch-btn" onclick="toggleCarouselRun(${i})">${isOpen ? '▲ Collapse' : '▼ View Slides'}</button>
+            <a class="ch-btn primary" href="/api/slides/${r.id}/download-all.zip" download="carousel-${r.id}.zip">⬇ Download All</a>
+            ${_renderIGButton(r)}
+          </div>
+          ${_renderIGStatus(r)}
+        </div>
+      </div>`;
+    if (isOpen) {
+      html += renderCarouselExpanded(r);
+    }
+  });
+  grid.innerHTML = html;
+}
+
+function toggleCarouselRun(i) {
+  carouselExpanded = carouselExpanded === i ? null : i;
+  renderCarouselRuns();
+}
+
+function renderCarouselExpanded(r) {
+  const res = r.result || {};
+  const slides = res.slides || [];
+  const slideItems = slides.map((s, si) => {
+    const fname = s.filename || `slide-${si+1}.png`;
+    const dlUrl = s.url?.startsWith('http') ? s.url : `${s.url}?download=true`;
+    const label = fname.replace('slide-','').replace('.png','').replace(/^\d+-/,'') || `slide ${si+1}`;
+    return `
+      <div class="ch-slide-item">
+        <img class="ch-slide-img" src="${s.url}" loading="lazy">
+        <div class="ch-slide-label">${label}</div>
+        <a class="ch-slide-dl" href="${dlUrl}" download="${fname}">↓ Download</a>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="ch-expanded" style="grid-column:1/-1">
+      <div class="ch-exp-hdr">
+        <span class="ch-exp-title">${r.topic || 'Carousel'}</span>
+        <span class="ch-exp-date">${fmtDate(r.created_at)} · ${slides.length} slides</span>
+        <a class="ch-btn primary" href="/api/slides/${r.id}/download-all.zip" download="carousel-${r.id}.zip">⬇ Download All ${slides.length} Slides</a>
+        ${_renderIGButton(r)}
+      </div>
+      ${_renderIGStatus(r)}
+      ${res.caption ? `<div style="font-size:12px;color:var(--text2);line-height:1.6;background:var(--surf2);padding:10px 12px;border-radius:7px;white-space:pre-wrap">${res.caption}</div>` : ''}
+      <div class="ch-slides-scroll">${slideItems}</div>
+    </div>`;
+}
+
+// ── Start run (router) ────────────────────────────────────────────────────
+function startRun() {
+  if (running) return;
+  if (selected?.id === 'gmb-autopilot') startGmbRun();
+  else if (selected?.id === 'carousel-pipeline') startCarouselRun();
+  else if (selected?.id === 'weekly-growth') startGrowthRun();
+}
+
+// ── GMB Run ───────────────────────────────────────────────────────────────
+async function startGmbRun() {
+  running = true;
+  runState = {};
+  showRunUI(3);
+  setStatus('Running...');
+  log('Starting GMB Autopilot...', 'info');
+  const btn = lockBtn('Running...');
+
+  try {
+    const { run_id } = await (await fetch('/api/gmb/run?force=true', { method: 'POST' })).json();
+    log(`Run ID: ${run_id}`, 'info');
+    await streamRun(run_id, handleGmbEvent);
+  } catch (err) {
+    log(`Error: ${err.message}`, 'err');
+  }
+
+  running = false;
+  setStatus('Done');
+  unlockBtn(btn, 'Run Now');
+}
+
+function handleGmbEvent(evt) {
+  const { step, message, data, progress } = evt;
+  if (progress) setProgress(progress);
+
+  if (step === 'preparing')      { setStep(1,'active'); log(`[Step 1] ${message}`, 'step'); }
+  else if (step === 'prepared')  { setStep(1,'done'); runState.prepared = data; log(`✓ ${data?.destination} / ${data?.template}`, 'ok'); }
+  else if (step === 'generating_image') { setStep(2,'active'); log(`[Step 2] ${message}`, 'step'); }
+  else if (step === 'image_ready') {
+    setStep(2,'done');
+    if (data?.image_url) { runState.imageUrl = data.image_url; log('✓ Image ready', 'ok'); }
+    else if (data?.error) log(`⚠ Image failed: ${data.error}`, 'warn');
+    else log(`⚠ ${message}`, 'warn');
+  }
+  else if (step === 'posting')   { setStep(3,'active'); log(`[Step 3] ${message}`, 'step'); }
+  else if (step === 'complete') {
+    setStep(3,'done');
+    if (data?.skipped) { log('ℹ Already posted today — skipped.', 'info'); }
+    else {
+      log('✓ Posted to Google Business Profile!', 'ok');
+      runState.result = data;
+      // Use imgbb permanent URL if available, fallback to local path
+      runState.imageUrl = data?.image_url || data?.local_image_url || runState.imageUrl;
+      showGmbResult();
+    }
+    setTimeout(loadGmbHistory, 2500);
+  }
+  else if (step === 'error') { markStepErr(); log(`✗ ${message}`, 'err'); }
+}
+
+function showGmbResult() {
+  const panel = document.getElementById('result-panel');
+  if (!panel) return;
+  const { prepared, imageUrl, result } = runState;
+  const destination = result?.destination || prepared?.destination;
+  const template = result?.template || prepared?.template;
+  const postText = result?.post_text || prepared?.post_text;
+
+  panel.innerHTML = `
+    <div class="result-grid">
+      <div class="result-img">
+        ${imageUrl
+          ? `<img src="${imageUrl}" alt="Generated image">`
+          : `<div class="result-img-ph"><span style="font-size:32px">🖼</span><span>No image generated</span></div>`}
+      </div>
+      <div class="result-card">
+        <div class="result-card-hdr">
+          <div>
+            ${destination ? `<div class="dest-row"><span class="dest-name">${destination}</span><span class="tmpl-badge">${template||''}</span></div>` : ''}
+            <div class="result-rlabel">Post Content</div>
+          </div>
+          <span class="badge-ok">✓ Posted to GBP</span>
+        </div>
+        <div class="result-text">${postText || ''}</div>
+      </div>
+    </div>`;
+  panel.classList.remove('hidden');
+}
+
+// ── Growth Calendar Run ───────────────────────────────────────────────────
+async function startGrowthRun() {
+  running = true;
+  runState = {};
+  showRunUI(4);
+  setStatus('Running...');
+  log('Starting Weekly Growth Strategy with live Apify intel...', 'info');
+  const btn = lockBtn('Generating...');
+
+  try {
+    const { run_id } = await (await fetch('/api/growth/run', { method: 'POST' })).json();
+    log(`Run ID: ${run_id}`, 'info');
+    await streamRun(run_id, handleGrowthEvent);
+  } catch (err) {
+    log(`Error: ${err.message}`, 'err');
+  }
+
+  running = false;
+  setStatus('Done');
+  unlockBtn(btn, "Generate This Week's Plan");
+}
+
+function handleGrowthEvent(evt) {
+  const { step, message, data, progress } = evt;
+  if (progress) setProgress(progress);
+  if (step === 'fetching_ig')          { setStep(1,'active'); log(`[Step 1] ${message}`, 'step'); }
+  else if (step === 'researching_web') { setStep(1,'done'); setStep(2,'active'); log(`[Step 2] ${message}`, 'step'); }
+  else if (step === 'analyzing') {
+    setStep(2,'done'); setStep(3,'active');
+    log(`[Step 3] ${message}`, 'step');
+    if (data?.intel_summary) {
+      const s = data.intel_summary;
+      log(`✓ Followers: ${s.followers?.toLocaleString?.() || s.followers} | engagement: ${s.engagement_rate_pct}% | competitors: ${s.competitors_analyzed}/4 | web articles: ${s.web_articles_found ?? 0}`, 'ok');
+    }
+  }
+  else if (step === 'generating')      { setStep(3,'done'); setStep(4,'active'); log(`[Step 4] ${message}`, 'step'); }
+  else if (step === 'complete') {
+    setStep(4,'done');
+    log(`✓ 7-day calendar ready for ${data?.week_of || ''}`, 'ok');
+    setTimeout(loadGrowthCalendar, 1000);
+  }
+  else if (step === 'error') { markStepErr(); log(`✗ ${message}`, 'err'); }
+}
+
+async function loadGrowthCalendar() {
+  growthCalendar = null;
+  const w = document.getElementById('growth-calendar-wrap');
+  if (!w) return;
+  w.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+    ${[1,2,3,4].map(() => `<div class="shimmer" style="height:90px;border-radius:10px"></div>`).join('')}
+  </div>`;
+  try {
+    const resp = await fetch('/api/growth/calendar');
+    const data = await resp.json();
+    if (data.calendar && data.calendar.length) {
+      growthCalendar = data;
+      renderGrowthCalendar(data);
+    } else {
+      w.innerHTML = `<div class="gc-empty">
+        <div style="font-size:36px;margin-bottom:10px">📈</div>
+        <div>No calendar generated yet.</div>
+        <div style="margin-top:6px;font-size:12px">Click "Generate This Week\'s Plan" to create one.</div>
+      </div>`;
+    }
+    loadGrowthHistory();
+  } catch (e) { w.innerHTML = ''; }
+}
+
+async function loadGrowthHistory() {
+  try {
+    const resp = await fetch('/api/growth/history?limit=8');
+    const data = await resp.json();
+    growthHistory = data.runs || [];
+    _renderGrowthHistoryList();
+  } catch(e) {}
+}
+
+function renderGrowthCalendar(data) {
+  const w = document.getElementById('growth-calendar-wrap');
+  if (!w) return;
+  const cal = data.calendar || [];
+
+  const typeClass = ct => ct === 'Reel' ? 'gc-type-reel' : ct === 'Carousel' ? 'gc-type-carousel' : 'gc-type-static';
+  const numClass = (n, kind) => (n||0) === 0 ? 'gc-num-low' : kind === 'v' ? 'gc-num-v' : 'gc-num-l';
+
+  const rows = cal.map((item, idx) => `
+    <tr>
+      <td class="gc-td-day">${(item.day||'').slice(0,3).toUpperCase()}</td>
+      <td class="gc-td-date">${item.date||''}</td>
+      <td><span class="gc-type ${typeClass(item.content_type)}">${item.content_type||''}</span></td>
+      <td class="gc-td-topic">${_escape(item.topic||'')}</td>
+      <td class="gc-td-hook">"${_escape(item.hook||'')}"</td>
+      <td class="gc-td-cta">${_escape(item.cta||'')}</td>
+      <td class="gc-td-num"><span class="${numClass(item.virality_score,'v')}">${item.virality_score||0}</span></td>
+      <td class="gc-td-num"><span class="${numClass(item.lead_score,'l')}">${item.lead_score||0}</span></td>
+      <td><span class="gc-agent-badge">${_escape(item.assigned_agent||'')}</span></td>
+      <td class="gc-td-pkg">${_escape(item.dwt_package||'-')}</td>
+      <td class="gc-td-notes">${_escape(item.notes||'')}</td>
+      <td><button class="gc-row-copy" onclick='copyGrowthRow(${idx})'>Copy</button></td>
+    </tr>`).join('');
+
+  w.innerHTML = `
+    <div class="gc-section">
+      <div class="gc-bar">
+        <div>
+          <div class="gc-week-label">Week of ${data.week_of||''}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Generated ${_relTime(data.created_at)}</div>
+        </div>
+        <button class="gc-copy-btn" id="gcCopyAll" onclick="copyGrowthAll()">📋 Copy Whole Table</button>
+      </div>
+      ${_renderIntelPanel(data.intel || data.calendar_intel)}
+      ${_renderWebPanel(data.web_research)}
+      <div class="gc-table-wrap">
+        <table class="gc-table">
+          <thead>
+            <tr>
+              <th>Day</th><th>Date</th><th>Type</th><th>Topic</th><th>Hook</th>
+              <th>CTA</th><th>V</th><th>L</th><th>Agent</th><th>Package</th><th>Notes</th><th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div id="gc-history-section"></div>
+    </div>`;
+
+  _renderGrowthHistoryList();
+}
+
+function _escape(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);
+}
+
+function _renderWebPanel(research) {
+  if (!research || !research.available) return '';
+  const articles = research.articles || [];
+  if (!articles.length) return '';
+  const items = articles.slice(0, 5).map(a => `
+    <div class="gc-web-item">
+      <div class="gc-web-item-title">${_escape(a.title||'')}</div>
+      <div class="gc-web-item-src">${_escape(a.source||'')}${a.summary ? ' — ' + _escape(a.summary) : ''}</div>
+      ${(a.key_items||[]).length ? `<div class="gc-web-item-items">→ ${(a.key_items||[]).slice(0,5).map(_escape).join(' · ')}</div>` : ''}
+    </div>`).join('');
+  return `
+    <div class="gc-web">
+      <div class="gc-web-hdr">
+        <span style="font-size:14px">🌐</span>
+        <span class="gc-web-title">Trending Travel Articles (Web Research)</span>
+      </div>
+      <div class="gc-web-list">${items}</div>
+    </div>`;
+}
+
+function _renderIntelPanel(intel) {
+  if (!intel || !intel.available) return '';
+  const d = intel.dwt || {};
+  const mix = d.content_mix || {};
+  const comps = (intel.competitors || []).filter(c => c.posts_last_7d > 0);
+  const best = d.best_post || {};
+  const compsHtml = comps.length
+    ? comps.map(c => `<div>• <strong>@${_escape(c.handle)}</strong> — ${c.posts_last_7d} posts, top format ${c.top_format} (${c.best_engagement.toLocaleString()} engagement): "${_escape((c.best_hook||'').slice(0,110))}"</div>`).join('')
+    : '<div style="color:var(--text3)">No competitor data available this week.</div>';
+  return `
+    <div class="gc-intel">
+      <div class="gc-intel-hdr">
+        <span style="font-size:14px">📊</span>
+        <span class="gc-intel-title">Live Instagram Intel — last 7 days</span>
+      </div>
+      <div class="gc-intel-grid">
+        <div class="gc-intel-stat">
+          <div class="gc-intel-stat-label">Followers</div>
+          <div class="gc-intel-stat-val">${(d.followers||0).toLocaleString()}</div>
+        </div>
+        <div class="gc-intel-stat">
+          <div class="gc-intel-stat-label">Engagement</div>
+          <div class="gc-intel-stat-val">${d.engagement_rate_pct||0}%</div>
+          <div class="gc-intel-stat-sub">${d.avg_likes||0} avg likes · ${d.avg_comments||0} avg comments</div>
+        </div>
+        <div class="gc-intel-stat">
+          <div class="gc-intel-stat-label">Posts This Week</div>
+          <div class="gc-intel-stat-val">${d.posts_last_7d||0}</div>
+          <div class="gc-intel-stat-sub">${mix.Reel||0} Reels · ${mix.Carousel||0} Carousels · ${mix.Static||0} Static</div>
+        </div>
+        <div class="gc-intel-stat">
+          <div class="gc-intel-stat-label">Best Post</div>
+          <div class="gc-intel-stat-val" style="font-size:14px">${best.type||'-'} · ${(best.likes||0).toLocaleString()} ❤</div>
+          <div class="gc-intel-stat-sub">${(best.comments||0)} comments${best.views ? ' · '+best.views.toLocaleString()+' views' : ''}</div>
+        </div>
+      </div>
+      ${(d.posting_gaps||[]).length ? `<div style="font-size:11.5px;color:var(--amber)">⚠ Posting gaps: ${(d.posting_gaps||[]).join(', ')}</div>` : ''}
+      <div class="gc-intel-comps">${compsHtml}</div>
+    </div>`;
+}
+
+function copyGrowthRow(idx) {
+  const item = (growthCalendar?.calendar || [])[idx];
+  if (!item) return;
+  const txt = [
+    `${item.day} ${item.date} — ${item.content_type}`,
+    `Topic: ${item.topic}`,
+    `Hook: ${item.hook}`,
+    `CTA: ${item.cta}`,
+    `Virality: ${item.virality_score}/10 | Lead: ${item.lead_score}/10`,
+    `Agent: ${item.assigned_agent}${item.dwt_package ? ' | Package: ' + item.dwt_package : ''}`,
+    item.notes ? `Notes: ${item.notes}` : '',
+  ].filter(Boolean).join('\n');
+  navigator.clipboard.writeText(txt).then(() => {
+    const btns = document.querySelectorAll('.gc-row-copy');
+    if (btns[idx]) { btns[idx].textContent = '✓'; btns[idx].classList.add('ok'); setTimeout(() => { btns[idx].textContent = 'Copy'; btns[idx].classList.remove('ok'); }, 1200); }
+  });
+}
+
+function copyGrowthAll() {
+  const cal = growthCalendar?.calendar || [];
+  if (!cal.length) return;
+  const headers = ['Day','Date','Type','Topic','Hook','CTA','Virality','Lead','Agent','Package','Notes'];
+  const rows = cal.map(i => [
+    i.day || '', i.date || '', i.content_type || '', i.topic || '', i.hook || '',
+    i.cta || '', i.virality_score ?? '', i.lead_score ?? '',
+    i.assigned_agent || '', i.dwt_package || '', i.notes || ''
+  ].map(v => String(v).replace(/\t/g, ' ').replace(/\n/g, ' ')).join('\t'));
+  const txt = [headers.join('\t'), ...rows].join('\n');
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = document.getElementById('gcCopyAll');
+    if (btn) { btn.textContent = '✓ Copied — paste in Sheets/Excel'; btn.classList.add('ok'); setTimeout(() => { btn.textContent = '📋 Copy Whole Table'; btn.classList.remove('ok'); }, 1800); }
+  });
+}
+
+function _filterGrowthRuns() {
+  if (growthFilter === 'all') return growthHistory;
+  const now = Date.now();
+  if (growthFilter === '7')   return growthHistory.filter(r => now - new Date(r.created_at) < 7 *86400000);
+  if (growthFilter === '30')  return growthHistory.filter(r => now - new Date(r.created_at) < 30*86400000);
+  if (growthFilter === 'month') {
+    const d0 = new Date(); const m = d0.getMonth(), y = d0.getFullYear();
+    return growthHistory.filter(r => { const d = new Date(r.created_at); return d.getMonth()===m && d.getFullYear()===y; });
+  }
+  return growthHistory;
+}
+
+function setGrowthFilter(f) {
+  growthFilter = f;
+  _renderGrowthHistoryList();
+}
+
+function _renderGrowthHistoryList() {
+  const el = document.getElementById('gc-history-section');
+  if (!el || growthHistory.length === 0) return;
+  const filtered = _filterGrowthRuns();
+  const items = filtered.map(r => {
+    const isActive = growthCalendar && growthCalendar.run_id === r.run_id;
+    return `<div class="gc-hist-item${isActive?' gc-hist-active':''}" onclick="loadGrowthCalendarById('${r.run_id}')">
+      <span class="gc-hist-week">${r.week_of || r.run_id}</span>
+      <span class="gc-hist-date">${_relTime(r.created_at)}</span>
+    </div>`;
+  }).join('') || `<div class="gc-empty" style="padding:24px 12px;font-size:12px">No calendars in this period.</div>`;
+  el.innerHTML = `<div style="margin-top:8px">
+    <div class="sec-title" style="margin-bottom:8px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Past Calendars
+    </div>
+    <div class="ch-filters" style="margin-bottom:10px">
+      <button class="ch-filter${growthFilter==='all'?' active':''}" onclick="setGrowthFilter('all')">All</button>
+      <button class="ch-filter${growthFilter==='7'?' active':''}" onclick="setGrowthFilter('7')">Last 7 Days</button>
+      <button class="ch-filter${growthFilter==='30'?' active':''}" onclick="setGrowthFilter('30')">Last 30 Days</button>
+      <button class="ch-filter${growthFilter==='month'?' active':''}" onclick="setGrowthFilter('month')">This Month</button>
+    </div>
+    <div class="gc-hist">${items}</div>
+  </div>`;
+}
+
+function loadGrowthCalendarById(run_id) {
+  const r = growthHistory.find(x => x.run_id === run_id);
+  if (!r || !r.calendar) return;
+  growthCalendar = r;
+  renderGrowthCalendar(r);
+}
+
+// ── Landing Pages ─────────────────────────────────────────────────────────
+let lpState = { briefs: [], pages: [], supported_types: [], currentMode: 'list' };
+
+async function loadLandingPages() {
+  const w = document.getElementById('landing-pages-wrap');
+  if (!w) return;
+  w.innerHTML = `<div style="padding:32px;color:var(--text3);text-align:center">Loading landing pages...</div>`;
+  try {
+    const resp = await fetch('/api/landing-pages/list');
+    const data = await resp.json();
+    lpState.briefs = data.briefs || [];
+    lpState.pages = data.pages || [];
+    lpState.supported_types = data.supported_types || [];
+    renderLandingPages();
+  } catch (e) {
+    w.innerHTML = `<div style="padding:32px;color:var(--red)">Failed to load: ${e.message}</div>`;
+  }
+}
+
+function renderLandingPages() {
+  const w = document.getElementById('landing-pages-wrap');
+  if (!w) return;
+  const { briefs, pages } = lpState;
+
+  const briefByType = {};
+  briefs.forEach(b => { (briefByType[b.type] = briefByType[b.type] || []).push(b); });
+
+  const pagesHtml = pages.length ? pages.map(p => `
+    <div class="lp-page-card">
+      <div class="lp-page-info">
+        <div class="lp-page-name">${p.filename}</div>
+        <div class="lp-page-meta">${p.size_kb} KB · ${_relTime(p.modified)}</div>
+      </div>
+      <div class="lp-page-actions">
+        <a class="lp-btn" href="${p.preview_url}" target="_blank">👁 Preview</a>
+        <a class="lp-btn primary" href="${p.download_url}" download="${p.filename}">⬇ Download</a>
+        <button class="lp-btn danger" onclick="deleteLandingPage('${p.filename}')">✕</button>
+      </div>
+    </div>`).join('') :
+    `<div class="empty-state"><div class="empty-icon">🌐</div>No landing pages yet. Build your first one →</div>`;
+
+  const briefsHtml = briefs.length ? briefs.map(b => `
+    <div class="lp-brief-card">
+      <span class="lp-type-badge lp-type-${b.type}">${b.type}</span>
+      <span class="lp-brief-name">${b.slug}</span>
+      <button class="lp-btn" onclick="rebuildBrief('${b.filename}')">🔨 Re-build</button>
+    </div>`).join('') :
+    `<div class="empty-state"><div class="empty-icon">📄</div>No briefs found.</div>`;
+
+  w.innerHTML = `
+    <style>
+      .lp-section { margin-top: 20px; }
+      .lp-section-title { font-size:14px; font-weight:600; color:var(--text2); margin-bottom:10px; }
+      .lp-grid { display:flex; flex-direction:column; gap:10px; }
+      .lp-page-card, .lp-brief-card {
+        display:flex; justify-content:space-between; align-items:center;
+        background:var(--surf2); border:1px solid var(--border); border-radius:8px;
+        padding:14px 16px; gap:12px;
+      }
+      .lp-brief-card { gap: 10px; }
+      .lp-page-info { display:flex; flex-direction:column; gap:3px; flex:1; }
+      .lp-page-name, .lp-brief-name { font-weight:600; color:var(--text); font-size:13px; flex:1; }
+      .lp-page-meta { font-size:11px; color:var(--text3); }
+      .lp-page-actions { display:flex; gap:6px; flex-wrap:wrap; }
+      .lp-btn {
+        padding:6px 12px; font-size:11px; font-weight:500;
+        background:var(--surf3); color:var(--text2); border:1px solid var(--border2);
+        border-radius:5px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center;
+        transition: all .15s;
+      }
+      .lp-btn:hover { border-color: var(--teal); color: var(--text); }
+      .lp-btn.primary { background:rgba(12,105,128,.15); color:var(--teal2); border-color:rgba(12,105,128,.35); }
+      .lp-btn.danger { background:rgba(239,68,68,.1); color:#f87171; border-color:rgba(239,68,68,.3); }
+      .lp-type-badge {
+        font-size:10px; font-weight:600; padding:3px 8px; border-radius:4px;
+        text-transform:uppercase; letter-spacing:.4px;
+      }
+      .lp-type-comparison  { background:rgba(168,85,247,.15); color:#c084fc; }
+      .lp-type-tour-launch { background:rgba(234,88,12,.15); color:#fb923c; }
+      .lp-type-destination { background:rgba(12,105,128,.15); color:var(--teal2); }
+      .lp-type-audience    { background:rgba(34,197,94,.15); color:var(--green); }
+      .lp-actions-bar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+      .lp-build-btn {
+        padding:9px 18px; background:var(--teal); color:white;
+        border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;
+        transition: all .15s;
+      }
+      .lp-build-btn:hover { background:var(--teal2); }
+      .lp-build-btn.danger { background:#dc2626; }
+      .lp-info-box {
+        background: rgba(12,105,128,.08); border: 1px solid rgba(12,105,128,.25);
+        border-radius:8px; padding:14px 16px; font-size:12px; color:var(--text2);
+        margin-bottom:16px; line-height:1.55;
+      }
+      .lp-info-box strong { color: var(--text); }
+    </style>
+
+    <div class="lp-info-box">
+      <strong>🌐 Landing Pages.</strong> Generate production-ready HTML pages from briefs in <code>outputs/landing-pages/_briefs/</code>.
+      Supported types: <strong>${lpState.supported_types.join(' · ')}</strong>. Files saved to <code>outputs/landing-pages/</code>.
+    </div>
+
+    <div class="lp-actions-bar">
+      <button class="lp-build-btn" onclick="buildAllLandingPages()">🔨 Build All Briefs</button>
+      <button class="lp-build-btn" onclick="loadLandingPages()" style="background:var(--surf3);color:var(--text2)">🔄 Refresh</button>
+    </div>
+
+    <div class="lp-section">
+      <div class="lp-section-title">📄 Briefs (${briefs.length})</div>
+      <div class="lp-grid">${briefsHtml}</div>
+    </div>
+
+    <div class="lp-section">
+      <div class="lp-section-title">🌐 Generated Pages (${pages.length})</div>
+      <div class="lp-grid">${pagesHtml}</div>
+    </div>
+  `;
+}
+
+async function buildAllLandingPages() {
+  const btn = event.target;
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '⏳ Building...';
+  try {
+    const resp = await fetch('/api/landing-pages/build-all', { method: 'POST' });
+    const data = await resp.json();
+    if (data.succeeded) {
+      alert(`✓ Built ${data.succeeded} of ${data.total} pages successfully.${data.failed ? `\n${data.failed} failed.` : ''}`);
+      await loadLandingPages();
+    } else {
+      alert('Build failed. Check details:\n\n' + JSON.stringify(data, null, 2).slice(0,400));
+    }
+  } catch (e) {
+    alert('Network error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+}
+
+async function rebuildBrief(briefFilename) {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  try {
+    // POST build-all is simplest; for single rebuild we'd POST /build but that needs the brief JSON
+    const resp = await fetch('/api/landing-pages/build-all', { method: 'POST' });
+    const data = await resp.json();
+    const myResult = (data.results || []).find(r => r.brief === briefFilename);
+    if (myResult?.success) {
+      btn.textContent = '✓';
+      setTimeout(() => loadLandingPages(), 600);
+    } else {
+      alert('Build failed: ' + (myResult?.error || 'unknown error'));
+      btn.disabled = false;
+      btn.textContent = '🔨 Re-build';
+    }
+  } catch (e) {
+    alert('Network error: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = '🔨 Re-build';
+  }
+}
+
+async function deleteLandingPage(filename) {
+  if (!confirm(`Delete ${filename}? (The brief is preserved — only the generated HTML is removed.)`)) return;
+  try {
+    await fetch(`/api/landing-pages/page/${filename}`, { method: 'DELETE' });
+    await loadLandingPages();
+  } catch (e) {
+    alert('Delete failed: ' + e.message);
+  }
+}
+
+// ── Skills Library ─────────────────────────────────────────────────────────
+let skillsState = { skills: [], agents: [], selectedId: null, args: '', busy: false, result: null, error: null, expectJson: false, smart: true };
+
+async function loadSkillsLibrary() {
+  const w = document.getElementById('skills-library-wrap');
+  if (!w) return;
+  w.innerHTML = `<div style="padding:32px;color:var(--text3);text-align:center">Loading skills catalog...</div>`;
+  try {
+    const resp = await fetch('/api/skills/list');
+    const data = await resp.json();
+    skillsState.skills = data.skills || [];
+    skillsState.agents = data.agents || [];
+    if (!skillsState.selectedId && skillsState.skills.length) {
+      skillsState.selectedId = skillsState.skills[0].id;
+    }
+    renderSkillsLibrary();
+  } catch (e) {
+    w.innerHTML = `<div style="padding:32px;color:var(--red)">Failed to load: ${e.message}</div>`;
+  }
+}
+
+function renderSkillsLibrary() {
+  const w = document.getElementById('skills-library-wrap');
+  if (!w) return;
+  const all = [...skillsState.skills, ...skillsState.agents];
+  const selected = all.find(s => s.id === skillsState.selectedId);
+
+  w.innerHTML = `
+    <style>
+      .sk-card { background:var(--surf2); border:1px solid var(--border); border-radius:10px; padding:18px; margin-bottom:14px; }
+      .sk-form-row { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:14px; }
+      .sk-form-group { flex:1; min-width:200px; display:flex; flex-direction:column; gap:6px; }
+      .sk-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text3); }
+      .sk-select, .sk-input {
+        padding:10px 12px; background:var(--surf3); border:1px solid var(--border2);
+        border-radius:7px; color:var(--text); font-size:13.5px; font-family:inherit;
+      }
+      .sk-select:focus, .sk-input:focus { outline:2px solid var(--teal); border-color:var(--teal); }
+      .sk-textarea {
+        width:100%; padding:11px 13px; background:var(--surf3); border:1px solid var(--border2);
+        border-radius:7px; color:var(--text); font-size:13px; font-family:inherit; line-height:1.55;
+        resize:vertical; min-height:80px;
+      }
+      .sk-meta-block {
+        background:var(--surf); border:1px solid var(--border); border-radius:7px;
+        padding:10px 13px; font-size:11.5px; color:var(--text2); line-height:1.55;
+      }
+      .sk-meta-block strong { color:var(--text); }
+      .sk-pill {
+        display:inline-block; font-size:10px; padding:2px 7px; border-radius:3px;
+        background:var(--surf3); color:var(--text3); text-transform:uppercase; letter-spacing:.4px;
+        font-weight:600; margin-right:5px;
+      }
+      .sk-pill.skill  { background:rgba(12,105,128,.18); color:var(--teal2); }
+      .sk-pill.agent  { background:rgba(245,197,24,.18); color:var(--amber); }
+      .sk-run-btn {
+        padding:11px 20px; background:var(--teal); color:white; border:none;
+        border-radius:7px; cursor:pointer; font-weight:600; font-size:13px; min-height:42px;
+        display:inline-flex; align-items:center; gap:7px;
+      }
+      .sk-run-btn:hover { background:var(--teal2); }
+      .sk-run-btn:disabled { opacity:.6; cursor:not-allowed; }
+      .sk-output {
+        background:var(--surf); border:1px solid var(--border2); border-radius:8px;
+        padding:14px 16px; font-size:13px; line-height:1.65; color:var(--text2);
+        white-space:pre-wrap; word-break:break-word; font-family:inherit;
+        max-height:520px; overflow-y:auto; margin-top:10px;
+      }
+      .sk-info-line { font-size:11.5px; color:var(--text3); margin-top:6px; }
+      .sk-info-line code { background:var(--surf3); padding:1px 5px; border-radius:3px; font-size:10.5px; }
+    </style>
+
+    <div class="sk-card">
+      <div style="font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px">
+        🧠 Skills Library
+        <span style="font-size:10.5px;font-weight:500;color:var(--text3);background:var(--surf);padding:2px 8px;border-radius:11px">Gemini-powered · ${skillsState.skills.length} skills + ${skillsState.agents.length} agents</span>
+      </div>
+      <div style="font-size:11.5px;color:var(--text3);line-height:1.55;margin-bottom:14px">
+        Run any DWT skill or agent directly. The skill's markdown is loaded as a Gemini system prompt, with brand reference files auto-injected. Output is returned inline (skills that need to write files will return the suggested content instead).
+      </div>
+
+      <div class="sk-form-row">
+        <div class="sk-form-group" style="flex:2">
+          <label class="sk-label">Skill / Agent</label>
+          <select class="sk-select" onchange="skillsState.selectedId = this.value; renderSkillsLibrary()">
+            <optgroup label="📘 Skills (${skillsState.skills.length})">
+              ${skillsState.skills.map(s => `
+                <option value="${s.id}" ${s.id === skillsState.selectedId ? 'selected' : ''}>${s.id}</option>
+              `).join('')}
+            </optgroup>
+            <optgroup label="🤖 Agents (${skillsState.agents.length})">
+              ${skillsState.agents.map(a => `
+                <option value="${a.id}" ${a.id === skillsState.selectedId ? 'selected' : ''}>${a.id}</option>
+              `).join('')}
+            </optgroup>
+          </select>
+        </div>
+        <div class="sk-form-group" style="flex:0; min-width:auto">
+          <label class="sk-label">Model</label>
+          <select class="sk-select" onchange="skillsState.smart = (this.value === 'pro')">
+            <option value="pro" ${skillsState.smart ? 'selected' : ''}>2.5 Pro (smart)</option>
+            <option value="flash" ${!skillsState.smart ? 'selected' : ''}>2.5 Flash (fast)</option>
+          </select>
+        </div>
+      </div>
+
+      ${selected ? `
+        <div class="sk-meta-block" style="margin-bottom:12px">
+          <div><span class="sk-pill ${selected.type}">${selected.type}</span><strong>${selected.id}</strong></div>
+          <div style="margin-top:5px">${selected.description || '<em>No description.</em>'}</div>
+        </div>
+      ` : ''}
+
+      <div class="sk-form-row">
+        <div class="sk-form-group" style="flex:1">
+          <label class="sk-label">Your input / args (optional)</label>
+          <textarea class="sk-textarea" rows="3" placeholder="e.g. 'Kashmir family May 2026 honeymoon' or detailed brief…"
+                    oninput="skillsState.args = this.value">${skillsState.args.replace(/</g,'&lt;')}</textarea>
+          <div class="sk-info-line">
+            Leave blank to let the skill run with defaults. For agents that expect structured input, paste the brief directly.
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer">
+          <input type="checkbox" ${skillsState.expectJson ? 'checked' : ''} onchange="skillsState.expectJson = this.checked">
+          Expect JSON output
+        </label>
+        <button class="sk-run-btn" onclick="runSkill()" ${skillsState.busy ? 'disabled' : ''}>
+          ${skillsState.busy ? '<div class="spin"></div> Running…' : '▶ Run Skill'}
+        </button>
+        <span style="font-size:11px;color:var(--text3)">Takes ~10-60s depending on output size + model</span>
+      </div>
+
+      ${renderSkillResult()}
+    </div>
+  `;
+}
+
+function renderSkillResult() {
+  if (skillsState.busy) {
+    return `
+      <div class="sk-info-line" style="margin-top:14px;padding:12px;background:var(--surf);border-radius:7px;text-align:center">
+        Gemini is running <strong>${skillsState.selectedId}</strong> — reading skill markdown, auto-loading referenced brand files, generating output...
+      </div>`;
+  }
+  if (skillsState.error) {
+    return `<div style="margin-top:14px;color:#f87171;font-size:12.5px;padding:12px;background:rgba(239,68,68,.06);border-radius:7px">⚠ ${skillsState.error}</div>`;
+  }
+  if (!skillsState.result) return '';
+
+  const r = skillsState.result;
+  const out = r.output;
+  let outStr;
+  if (typeof out === 'string') outStr = out;
+  else { try { outStr = JSON.stringify(out, null, 2); } catch { outStr = String(out); }}
+
+  const refs = r.referenced_files || [];
+  return `
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">
+          Output · ${outStr.length} chars · ${r.model_used}
+        </div>
+        <button onclick="navigator.clipboard.writeText(${JSON.stringify(outStr)}); this.textContent='✓ Copied'" style="padding:5px 11px;background:var(--surf3);border:1px solid var(--border2);border-radius:5px;color:var(--text2);font-size:11px;cursor:pointer">📋 Copy</button>
+      </div>
+      ${refs.length ? `<div class="sk-info-line" style="margin-bottom:6px">Auto-loaded ${refs.length} reference file(s): ${refs.map(f => `<code>${f}</code>`).join(' · ')}</div>` : '<div class="sk-info-line" style="margin-bottom:6px;color:#f59e0b">⚠ No reference files were auto-loaded for this skill.</div>'}
+      <div class="sk-output">${outStr.replace(/</g,'&lt;')}</div>
+    </div>
+  `;
+}
+
+async function runSkill() {
+  if (skillsState.busy) return;
+  if (!skillsState.selectedId) { alert('Pick a skill or agent first.'); return; }
+  skillsState.busy = true;
+  skillsState.error = null;
+  skillsState.result = null;
+  renderSkillsLibrary();
+  try {
+    const resp = await fetch('/api/skills/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: skillsState.selectedId,
+        args: skillsState.args,
+        expect_json: skillsState.expectJson,
+        smart: skillsState.smart,
+      }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Skill execution failed');
+    skillsState.result = data;
+  } catch (e) {
+    skillsState.error = e.message;
+  } finally {
+    skillsState.busy = false;
+    renderSkillsLibrary();
+  }
+}
+
+// ── Marketing Posts ────────────────────────────────────────────────────────
+let mpState = {
+  inspirations: [], history: [],
+  selectedInsp: null, selectedModel: 'gemini',
+  generating: false,
+  mode: 'single',          // 'single' | 'smart'
+  smartCount: 3,
+  smartBusy: false,
+  smartResult: null,       // {intent_summary, posts, errors} after smart-generate completes
+};
+
+async function loadMarketingPosts() {
+  const w = document.getElementById('marketing-posts-wrap');
+  if (!w) return;
+  w.innerHTML = `<div style="padding:32px;color:var(--text3);text-align:center">Loading marketing posts...</div>`;
+  try {
+    const [inspResp, histResp] = await Promise.all([
+      fetch('/api/marketing-posts/inspirations'),
+      fetch('/api/marketing-posts/history?limit=30'),
+    ]);
+    const inspData = await inspResp.json();
+    const histData = await histResp.json();
+    mpState.inspirations = inspData.inspirations || [];
+    mpState.history = histData.posts || [];
+    if (!mpState.selectedInsp && mpState.inspirations.length) mpState.selectedInsp = mpState.inspirations[0].id;
+    renderMarketingPosts();
+  } catch (e) {
+    w.innerHTML = `<div style="padding:32px;color:var(--red)">Failed to load: ${e.message}</div>`;
+  }
+}
+
+function renderMarketingPosts() {
+  const w = document.getElementById('marketing-posts-wrap');
+  if (!w) return;
+
+  const inspCards = mpState.inspirations.map(i => {
+    const isSelected = i.id === mpState.selectedInsp;
+    return `
+      <div class="mp-insp-card ${isSelected ? 'mp-insp-selected' : ''}" onclick="selectInspiration('${i.id}')">
+        <img src="${i.preview_url}" alt="${i.name}" class="mp-insp-preview" loading="lazy">
+        <div class="mp-insp-info">
+          <div class="mp-insp-name">${i.name} ${isSelected ? '✓' : ''}</div>
+          <div class="mp-insp-tagline">${i.tagline}</div>
+          <div class="mp-insp-meta">${i.aesthetic}</div>
+          <div class="mp-insp-best">Best for: ${i.best_for}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const historyCards = mpState.history.length ? mpState.history.map(p => `
+    <div class="mp-history-card">
+      <img src="${p.image_url}" alt="${p.destination}" class="mp-history-thumb" loading="lazy" onclick="window.open('${p.image_url}', '_blank')">
+      <div class="mp-history-info">
+        <div class="mp-history-dest">${p.destination}</div>
+        <div class="mp-history-meta">${p.inspiration_name || p.inspiration_id} · ${_relTime(p.created_at)}</div>
+      </div>
+      <a class="mp-btn primary" href="${p.permanent_url || p.image_url}" target="_blank" download>⬇ Download</a>
+    </div>`).join('') :
+    `<div class="empty-state"><div class="empty-icon">📱</div>No posts generated yet. Type a destination above and pick an inspiration.</div>`;
+
+  w.innerHTML = `
+    <style>
+      .mp-form { background:var(--surf2); border:1px solid var(--border); border-radius:10px; padding:18px 20px; margin-bottom:24px; }
+      .mp-form-row { display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
+      .mp-form-group { flex:1; min-width:200px; }
+      .mp-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text3); margin-bottom:6px; }
+      .mp-input {
+        width:100%; padding:10px 14px; background:var(--surf3); border:1px solid var(--border2);
+        border-radius:7px; color:var(--text); font-size:14px;
+      }
+      .mp-input:focus { outline:2px solid var(--teal); border-color:var(--teal); }
+      .mp-help { font-size:11px; color:var(--text3); margin-top:6px; }
+      .mp-model-toggle {
+        display:flex; gap:0; background:var(--surf3); border:1px solid var(--border2);
+        border-radius:7px; overflow:hidden; height:42px;
+      }
+      .mp-model-btn {
+        padding:0 14px; background:transparent; color:var(--text3); border:none;
+        font-size:12px; font-weight:500; cursor:pointer;
+        transition: all .15s; min-height:42px;
+        white-space:nowrap;
+      }
+      .mp-model-btn:hover { color:var(--text); background:rgba(255,255,255,.04); }
+      .mp-model-btn.mp-model-sel {
+        background:var(--teal); color:white; font-weight:600;
+      }
+      .mp-generate-btn {
+        padding:10px 22px; background:var(--teal); color:white; border:none;
+        border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; min-height:44px;
+        display:inline-flex; align-items:center; gap:6px;
+        transition: all .15s;
+      }
+      .mp-generate-btn:hover { background:var(--teal2); }
+      .mp-generate-btn:disabled { opacity:.6; cursor:not-allowed; }
+
+      .mp-section-title { font-size:14px; font-weight:600; color:var(--text2); margin:24px 0 10px; display:flex; align-items:center; gap:8px; }
+      .mp-section-hint { font-size:11.5px; color:var(--text3); margin-left:auto; }
+
+      .mp-insp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+      .mp-insp-card {
+        background:var(--surf2); border:2px solid var(--border); border-radius:10px;
+        overflow:hidden; cursor:pointer; transition: all .2s;
+        display:flex; flex-direction:column;
+      }
+      .mp-insp-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+      .mp-insp-selected { border-color:var(--teal) !important; box-shadow:0 0 0 1px var(--teal); }
+      .mp-insp-preview { width:100%; height:150px; object-fit:cover; }
+      .mp-insp-info { padding:12px 14px; }
+      .mp-insp-name { font-size:13.5px; font-weight:600; color:var(--text); margin-bottom:4px; }
+      .mp-insp-tagline { font-size:11.5px; color:var(--text2); line-height:1.45; margin-bottom:6px; }
+      .mp-insp-meta { font-size:10.5px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; }
+      .mp-insp-best { font-size:11px; color:var(--text3); font-style:italic; }
+
+      .mp-result {
+        background:var(--surf2); border:1px solid var(--border); border-radius:10px;
+        padding:18px; margin-top:20px;
+        display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;
+      }
+      .mp-result-img { width:240px; height:240px; object-fit:cover; border-radius:8px; }
+      .mp-result-info { flex:1; min-width:240px; }
+      .mp-result-dest { font-size:18px; font-weight:600; color:var(--text); margin-bottom:4px; }
+      .mp-result-meta { font-size:12px; color:var(--text3); margin-bottom:12px; }
+      .mp-result-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+      .mp-history-grid { display:flex; flex-direction:column; gap:10px; }
+      .mp-history-card {
+        display:flex; gap:14px; align-items:center;
+        background:var(--surf2); border:1px solid var(--border); border-radius:8px;
+        padding:12px 14px;
+      }
+      .mp-history-thumb { width:64px; height:64px; object-fit:cover; border-radius:6px; cursor:pointer; }
+      .mp-history-info { flex:1; min-width:0; }
+      .mp-history-dest { font-size:13px; font-weight:600; color:var(--text); }
+      .mp-history-meta { font-size:11px; color:var(--text3); }
+
+      .mp-btn {
+        padding:6px 12px; font-size:11px; font-weight:500;
+        background:var(--surf3); color:var(--text2); border:1px solid var(--border2);
+        border-radius:5px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center;
+        transition: all .15s;
+      }
+      .mp-btn:hover { border-color: var(--teal); color: var(--text); }
+      .mp-btn.primary { background:rgba(12,105,128,.15); color:var(--teal2); border-color:rgba(12,105,128,.35); }
+
+      .mp-mode-tabs {
+        display:inline-flex; gap:0; background:var(--surf2); border:1px solid var(--border2);
+        border-radius:9px; overflow:hidden; margin-bottom:18px;
+      }
+      .mp-mode-tab {
+        padding:10px 18px; background:transparent; color:var(--text3); border:none;
+        font-size:13px; font-weight:500; cursor:pointer; min-height:42px;
+        display:inline-flex; align-items:center; gap:6px;
+        transition: all .15s; white-space:nowrap;
+      }
+      .mp-mode-tab:hover { color:var(--text); background:rgba(255,255,255,.04); }
+      .mp-mode-tab.mp-mode-sel { background:var(--teal); color:white; font-weight:600; }
+      .mp-mode-badge { font-size:9.5px; background:var(--amber); color:#1a1a1a; padding:1px 6px; border-radius:8px; font-weight:700; letter-spacing:.4px; }
+
+      .mp-smart-result-grid {
+        display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+        gap:14px; margin-top:18px;
+      }
+      .mp-smart-card {
+        background:var(--surf2); border:1px solid var(--border); border-radius:10px;
+        overflow:hidden; display:flex; flex-direction:column;
+      }
+      .mp-smart-card img { width:100%; aspect-ratio:1; object-fit:cover; display:block; cursor:pointer; }
+      .mp-smart-card-body { padding:12px 14px; display:flex; flex-direction:column; gap:6px; }
+      .mp-smart-dest { font-size:14px; font-weight:600; color:var(--text); }
+      .mp-smart-insp { font-size:11px; color:var(--teal2); text-transform:uppercase; letter-spacing:.4px; }
+      .mp-smart-rationale { font-size:11.5px; color:var(--text2); font-style:italic; line-height:1.5; }
+      .mp-smart-card-actions { display:flex; gap:6px; margin-top:4px; }
+      .mp-smart-intent {
+        background:linear-gradient(135deg,rgba(12,105,128,.12),rgba(245,197,24,.06));
+        border:1px solid var(--border2); border-radius:8px; padding:10px 14px;
+        margin-top:14px; font-size:12.5px; color:var(--text2); line-height:1.5;
+      }
+      .mp-smart-intent strong { color:var(--teal2); }
+      .mp-smart-error-card {
+        background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25);
+        border-radius:8px; padding:10px 14px; font-size:12px; color:#f87171;
+      }
+    </style>
+
+    <div class="mp-mode-tabs">
+      <button class="mp-mode-tab ${mpState.mode === 'single' ? 'mp-mode-sel' : ''}" onclick="setMpMode('single')">
+        🎨 Single Post
+      </button>
+      <button class="mp-mode-tab ${mpState.mode === 'smart' ? 'mp-mode-sel' : ''}" onclick="setMpMode('smart')">
+        🤖 Smart Batch <span class="mp-mode-badge">AI</span>
+      </button>
+    </div>
+
+    ${mpState.mode === 'smart' ? renderSmartBatchForm() : ''}
+    ${mpState.mode === 'single' ? `
+    <div class="mp-form">
+      <div class="mp-form-row">
+        <div class="mp-form-group">
+          <div class="mp-label">Destination *</div>
+          <input class="mp-input" id="mp-destination" type="text" placeholder="e.g. Bhutan, Vietnam, Kashmir Apple Blossom" onkeydown="if(event.key==='Enter') generateMarketingPost()">
+        </div>
+      </div>
+
+      <div class="mp-form-row" style="margin-top:14px">
+        <div class="mp-form-group">
+          <div class="mp-label">Price line</div>
+          <input class="mp-input" id="mp-price" type="text" placeholder="e.g. ₹65,000 per person · 6N/7D">
+        </div>
+        <div class="mp-form-group">
+          <div class="mp-label">Departures</div>
+          <input class="mp-input" id="mp-departures" type="text" placeholder="e.g. Sep 12 · 19 · 26, 2026">
+        </div>
+      </div>
+
+      <div class="mp-form-row" style="margin-top:14px">
+        <div class="mp-form-group">
+          <div class="mp-label">Highlights (one per line, up to 5)</div>
+          <textarea class="mp-input" id="mp-highlights" rows="3" placeholder="e.g.&#10;5★ houseboat in Srinagar&#10;Gondola ride in Gulmarg&#10;Apple orchard stay in Pahalgam"></textarea>
+        </div>
+      </div>
+
+      <div class="mp-form-row" style="margin-top:14px; align-items:flex-end">
+        <div class="mp-form-group" style="flex:0; min-width:auto;">
+          <div class="mp-label">Image Model</div>
+          <div class="mp-model-toggle">
+            <button class="mp-model-btn ${mpState.selectedModel === 'gemini' ? 'mp-model-sel' : ''}" onclick="selectModel('gemini')">
+              🍌 Nano-Banana Pro
+            </button>
+            <button class="mp-model-btn ${mpState.selectedModel === 'openai' ? 'mp-model-sel' : ''}" onclick="selectModel('openai')">
+              🟢 OpenAI Image-2
+            </button>
+          </div>
+        </div>
+        <div class="mp-form-group" style="flex:0; min-width:auto;">
+          <button class="mp-generate-btn" id="mp-gen-btn" onclick="generateMarketingPost()">
+            <span id="mp-gen-icon">🎨</span> <span id="mp-gen-label">Generate Post</span>
+          </button>
+        </div>
+        <div class="mp-form-group" style="flex:1; min-width:0;">
+          <div class="mp-help">Optional fields are baked directly into the design. Leave blank to let the AI pick generic defaults.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mp-section-title">
+      🎨 Choose an inspiration
+      <span class="mp-section-hint">Click any card to select. Hover for details.</span>
+    </div>
+    <div class="mp-insp-grid">${inspCards}</div>
+
+    <div id="mp-result-wrap"></div>
+    ` : ''}
+
+    ${mpState.mode === 'smart' ? `<div id="mp-smart-result-wrap">${renderSmartResults()}</div>` : ''}
+
+    <div class="mp-section-title">
+      📚 Generated posts history
+      <span class="mp-section-hint">${mpState.history.length} saved</span>
+    </div>
+    <div class="mp-history-grid">${historyCards}</div>
+  `;
+}
+
+function setMpMode(mode) {
+  mpState.mode = mode;
+  renderMarketingPosts();
+}
+
+function renderSmartBatchForm() {
+  return `
+    <div class="mp-form">
+      <div class="mp-form-row">
+        <div class="mp-form-group">
+          <div class="mp-label">What do you want? (free text — the AI agent plans + picks inspirations)</div>
+          <textarea class="mp-input" id="mp-smart-request" rows="3" placeholder="e.g.&#10;Make 3 Kashmir posts for May families. Use real DWT package price ₹65,000 for 6N/7D. Mix styles."></textarea>
+          <div class="mp-help">Be specific: destination, audience, season, price/dates if you have them. The agent (Claude) reads this, picks the right inspirations, writes headlines + highlights for each.</div>
+        </div>
+      </div>
+
+      <div class="mp-form-row" style="margin-top:14px; align-items:flex-end">
+        <div class="mp-form-group" style="flex:0; min-width:auto;">
+          <div class="mp-label">How many</div>
+          <div class="mp-model-toggle">
+            ${[1,2,3,4,5].map(n => `
+              <button class="mp-model-btn ${mpState.smartCount === n ? 'mp-model-sel' : ''}" onclick="setSmartCount(${n})">${n}</button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="mp-form-group" style="flex:0; min-width:auto;">
+          <div class="mp-label">Image Model</div>
+          <div class="mp-model-toggle">
+            <button class="mp-model-btn ${mpState.selectedModel === 'gemini' ? 'mp-model-sel' : ''}" onclick="selectModel('gemini')">🍌 Nano-Banana Pro</button>
+            <button class="mp-model-btn ${mpState.selectedModel === 'openai' ? 'mp-model-sel' : ''}" onclick="selectModel('openai')">🟢 OpenAI Image-2</button>
+          </div>
+        </div>
+        <div class="mp-form-group" style="flex:0; min-width:auto;">
+          <button class="mp-generate-btn" id="mp-smart-btn" onclick="smartGenerate()" ${mpState.smartBusy ? 'disabled' : ''}>
+            <span>${mpState.smartBusy ? '⏳' : '🤖'}</span>
+            <span>${mpState.smartBusy ? `Planning + generating ${mpState.smartCount}...` : `Run agent (${mpState.smartCount} post${mpState.smartCount > 1 ? 's' : ''})`}</span>
+          </button>
+        </div>
+        <div class="mp-form-group" style="flex:1; min-width:0;">
+          <div class="mp-help">Plan: Claude → pick inspirations → write details per post → generate ${mpState.smartCount} images. Takes ~${30 + 60 * mpState.smartCount}s.</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setSmartCount(n) {
+  mpState.smartCount = n;
+  renderMarketingPosts();
+}
+
+function renderSmartResults() {
+  if (mpState.smartBusy) {
+    return `
+      <div class="mp-smart-intent" style="text-align:center;padding:24px">
+        <div style="font-size:24px;margin-bottom:8px">🤖</div>
+        <div><strong>Agent is working</strong></div>
+        <div style="margin-top:6px;font-size:11.5px">Step 1: Claude is reading your request and picking inspirations…<br>Step 2: Generating ${mpState.smartCount} image${mpState.smartCount > 1 ? 's' : ''} via ${mpState.selectedModel}…</div>
+      </div>`;
+  }
+  if (!mpState.smartResult) return '';
+  const r = mpState.smartResult;
+  const cards = (r.posts || []).map(p => `
+    <div class="mp-smart-card">
+      <img src="${p.image_url}" alt="${p.destination}" onclick="window.open('${p.image_url}', '_blank')">
+      <div class="mp-smart-card-body">
+        <div class="mp-smart-dest">${p.destination}</div>
+        <div class="mp-smart-insp">${p.inspiration_name}</div>
+        <div class="mp-smart-rationale">"${p.rationale || ''}"</div>
+        <div class="mp-smart-card-actions">
+          <a class="mp-btn primary" href="${p.permanent_url || p.image_url}" target="_blank" download="${p.filename}">⬇ Download</a>
+          <a class="mp-btn" href="${p.image_url}" target="_blank">👁 Full size</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  const errs = (r.errors || []).map(e => `
+    <div class="mp-smart-error-card">⚠ ${e.destination} (${e.inspiration_id}): ${e.error}</div>
+  `).join('');
+  return `
+    ${r.intent_summary ? `<div class="mp-smart-intent">🤖 <strong>Agent understood:</strong> ${r.intent_summary}</div>` : ''}
+    <div class="mp-smart-result-grid">${cards}</div>
+    ${errs ? `<div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">${errs}</div>` : ''}
+  `;
+}
+
+async function smartGenerate() {
+  if (mpState.smartBusy) return;
+  const req = document.getElementById('mp-smart-request').value.trim();
+  if (!req) {
+    alert('Please describe what you want.');
+    return;
+  }
+  mpState.smartBusy = true;
+  mpState.smartResult = null;
+  renderMarketingPosts();
+
+  try {
+    const resp = await fetch('/api/marketing-posts/smart-generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        request: req,
+        count: mpState.smartCount,
+        model_provider: mpState.selectedModel,
+      }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Smart generate failed');
+    mpState.smartResult = data;
+  } catch (e) {
+    mpState.smartResult = { intent_summary: '', posts: [], errors: [{ destination: '—', inspiration_id: '—', error: e.message }] };
+  } finally {
+    mpState.smartBusy = false;
+    renderMarketingPosts();
+    setTimeout(loadMarketingPosts, 1200);
+  }
+}
+
+function selectInspiration(id) {
+  mpState.selectedInsp = id;
+  renderMarketingPosts();
+}
+
+function selectModel(id) {
+  mpState.selectedModel = id;
+  renderMarketingPosts();
+}
+
+async function generateMarketingPost() {
+  if (mpState.generating) return;
+  const dest = document.getElementById('mp-destination').value.trim();
+  if (!dest) {
+    alert('Please enter a destination.');
+    return;
+  }
+  if (!mpState.selectedInsp) {
+    alert('Please select an inspiration.');
+    return;
+  }
+
+  const priceLine = document.getElementById('mp-price').value.trim();
+  const departures = document.getElementById('mp-departures').value.trim();
+  const highlightsRaw = document.getElementById('mp-highlights').value.trim();
+  const highlights = highlightsRaw
+    ? highlightsRaw.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 5)
+    : [];
+
+  const details = {};
+  if (priceLine) details.price_line = priceLine;
+  if (departures) details.departures = departures;
+  if (highlights.length) details.highlights = highlights;
+
+  mpState.generating = true;
+  const btn = document.getElementById('mp-gen-btn');
+  const icon = document.getElementById('mp-gen-icon');
+  const label = document.getElementById('mp-gen-label');
+  btn.disabled = true;
+  icon.textContent = '⏳';
+  label.textContent = 'Generating (~60s)...';
+
+  // Show provisional placeholder
+  const resultWrap = document.getElementById('mp-result-wrap');
+  resultWrap.innerHTML = `
+    <div class="mp-result">
+      <div style="width:240px;height:240px;background:var(--surf3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">
+        Generating image...
+      </div>
+      <div class="mp-result-info">
+        <div class="mp-result-dest">${dest}</div>
+        <div class="mp-result-meta">${mpState.inspirations.find(i => i.id === mpState.selectedInsp)?.name || ''}</div>
+        <div style="color:var(--text3);font-size:12px">Calling Gemini image API. This takes 30–90 seconds.</div>
+      </div>
+    </div>`;
+
+  try {
+    const resp = await fetch('/api/marketing-posts/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        destination: dest,
+        inspiration_id: mpState.selectedInsp,
+        model_provider: mpState.selectedModel,
+        details,
+      }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Generation failed');
+
+    resultWrap.innerHTML = `
+      <div class="mp-result">
+        <img src="${data.image_url}" alt="${data.destination}" class="mp-result-img" onclick="window.open('${data.image_url}', '_blank')">
+        <div class="mp-result-info">
+          <div class="mp-result-dest">${data.destination}</div>
+          <div class="mp-result-meta">${data.inspiration_name} · model: ${data.model_used || 'gemini'}</div>
+          <div style="color:var(--text2);font-size:13px;line-height:1.5;margin-bottom:12px">✓ Saved to history · Permanent URL ready to share on WhatsApp / Instagram</div>
+          <div class="mp-result-actions">
+            <a class="mp-btn primary" href="${data.permanent_url || data.image_url}" target="_blank" download="${data.filename}">⬇ Download</a>
+            <a class="mp-btn" href="${data.image_url}" target="_blank">👁 Open Full Size</a>
+            <button class="mp-btn" onclick="navigator.clipboard.writeText('${data.permanent_url || data.image_url}').then(()=>this.textContent='✓ Copied')">🔗 Copy URL</button>
+          </div>
+        </div>
+      </div>`;
+
+    // Refresh history
+    setTimeout(loadMarketingPosts, 1200);
+  } catch (e) {
+    resultWrap.innerHTML = `<div class="mp-result" style="border-color:var(--red)"><div style="color:var(--red);font-size:13px">✗ ${e.message}</div></div>`;
+  } finally {
+    mpState.generating = false;
+    btn.disabled = false;
+    icon.textContent = '🎨';
+    label.textContent = 'Generate Post';
+  }
+}
+
+function _relTime(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - new Date(ts);
+  const h = Math.floor(diff / 3600000);
+  const d = Math.floor(diff / 86400000);
+  if (h < 1) return 'just now';
+  if (h < 24) return `${h}h ago`;
+  return `${d}d ago`;
+}
+
+// ── Carousel Run ──────────────────────────────────────────────────────────
+async function startCarouselRun() {
+  running = true;
+  runState = { slides: [], caption: '' };
+  showRunUI(3);
+  setStatus('Running...');
+  log('Starting Carousel Pipeline...', 'info');
+  const btn = lockBtn('Generating...');
+
+  const topicHint = document.getElementById('topicInput')?.value?.trim() || '';
+  const body = { inspiration: carouselInsp, topic_hint: topicHint || null };
+
+  try {
+    const resp = await fetch('/api/run/carousel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const { run_id } = await resp.json();
+    log(`Run ID: ${run_id}`, 'info');
+    await streamRun(run_id, handleCarouselEvent);
+  } catch (err) {
+    log(`Error: ${err.message}`, 'err');
+  }
+
+  running = false;
+  setStatus('Done');
+  unlockBtn(btn, 'Generate Carousel');
+}
+
+function handleCarouselEvent(evt) {
+  const { step, message, data, progress } = evt;
+  if (progress) setProgress(progress);
+
+  if (step === 'researching') {
+    setStep(1, 'active');
+    log(`[Research] ${message}`, 'step');
+    if (data?.topic) log(`✓ Topic: ${data.topic}`, 'ok');
+  }
+  else if (step === 'writing_brief') {
+    setStep(1, 'done');
+    setStep(2, 'active');
+    log(`[Design] ${message}`, 'step');
+  }
+  else if (step === 'generating_slides') {
+    setStep(2, 'active');
+    log(message, '');
+  }
+  else if (step === 'complete') {
+    setStep(2, 'done');
+    setStep(3, 'done');
+    log(`✓ ${message}`, 'ok');
+    if (data?.slides) { runState.slides = data.slides; runState.caption = data.caption || ''; }
+    showCarouselResult();
+    setTimeout(loadCarouselHistory, 1500);
+  }
+  else if (step === 'error') { markStepErr(); log(`✗ ${message}`, 'err'); }
+}
+
+function showCarouselResult() {
+  const panel = document.getElementById('result-panel');
+  if (!panel) return;
+  const { slides, caption } = runState;
+  if (!slides?.length) return;
+
+  const thumbs = slides.map((s, i) =>
+    `<div class="slide-thumb${i===0?' active':''}" id="thumb-${i}" onclick="previewSlide(${i})">
+       <img src="${s.url}" alt="Slide ${i+1}" loading="lazy">
+       <div class="slide-label">Slide ${i+1}</div>
+     </div>`
+  ).join('');
+
+  const dlLinks = slides.map((s,i) =>
+    `<a class="dl-btn" href="${s.url}?download=true" download="slide-${i+1}.png">↓ Slide ${i+1}</a>`
+  ).join('');
+
+  panel.innerHTML = `
+    <div class="slides-section">
+      <div class="sec-title">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Generated Slides (${slides.length})
+      </div>
+      <div class="slides-strip" id="slides-strip">${thumbs}</div>
+      <div class="slide-preview-wrap">
+        <div class="slide-preview">
+          <img id="slide-big" src="${slides[0].url}" alt="Slide preview">
+        </div>
+        <div class="caption-card">
+          <div class="caption-label">Instagram Caption</div>
+          <div class="caption-text" id="caption-text">${caption || 'Caption not available.'}</div>
+          <button class="copy-btn" onclick="copyCaption()">📋 Copy caption</button>
+          <div class="download-row">${dlLinks}</div>
+        </div>
+      </div>
+    </div>`;
+  panel.classList.remove('hidden');
+}
+
+function previewSlide(i) {
+  const slides = runState.slides;
+  if (!slides?.[i]) return;
+  document.getElementById('slide-big').src = slides[i].url;
+  document.querySelectorAll('.slide-thumb').forEach((el, j) => el.classList.toggle('active', j === i));
+}
+
+function copyCaption() {
+  const text = document.getElementById('caption-text')?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = '📋 Copy caption', 2000); }
+  });
+}
+
+// ── Shared run helpers ────────────────────────────────────────────────────
+function showRunUI(steps) {
+  document.getElementById('steps')?.classList.remove('hidden');
+  document.getElementById('console')?.classList.remove('hidden');
+  document.getElementById('result-panel')?.classList.add('hidden');
+  const body = document.getElementById('con-body');
+  if (body) body.innerHTML = '';
+  setProgress(0);
+  for (let n = 1; n <= steps; n++) setStep(n, '');
+}
+
+async function streamRun(run_id, handler) {
+  await new Promise(resolve => {
+    const es = new EventSource(`/api/stream/${run_id}`);
+    es.onmessage = (e) => {
+      try {
+        const evt = JSON.parse(e.data);
+        handler(evt);
+        if (evt.step === 'complete' || evt.step === 'error') { es.close(); resolve(); }
+      } catch {}
+    };
+    es.onerror = () => { es.close(); resolve(); };
+  });
+}
+
+function lockBtn(label) {
+  const btn = document.getElementById('runBtn');
+  if (btn) { btn.disabled = true; btn.className = 'btn-run running'; btn.innerHTML = `<div class="spin"></div> ${label}`; }
+  return btn;
+}
+
+function unlockBtn(btn, label) {
+  if (!btn) return;
+  btn.disabled = false;
+  btn.className = 'btn-run';
+  btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> ${label}`;
+}
+
+function log(text, type) {
+  const body = document.getElementById('con-body');
+  if (!body) return;
+  const line = document.createElement('div');
+  line.className = 'con-line';
+  line.innerHTML = `<span class="con-time">${timeStr()}</span><span class="con-msg ${type}">${text}</span>`;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+}
+
+function setStep(n, state) {
+  const el = document.getElementById(`s${n}`);
+  if (el) el.className = `step${state ? ' '+state : ''}`;
+}
+
+function setProgress(pct) {
+  const el = document.getElementById('prog-fill');
+  if (el) el.style.width = `${pct}%`;
+}
+
+function setStatus(s) {
+  const el = document.getElementById('con-status');
+  if (el) el.textContent = s;
+}
+
+function markStepErr() {
+  [1,2,3].forEach(n => {
+    const el = document.getElementById(`s${n}`);
+    if (el?.classList.contains('active')) setStep(n, 'err');
+  });
+}
+
+function timeStr() {
+  return new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function relTime(iso) {
+  if (!iso) return '—';
+  const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  return `${Math.floor(diff/86400)}d ago`;
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('en-IN', {
+    day:'numeric', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit',
+  });
+}
+
+init();
+
+// ── Instagram Pipeline — the draft gate ──────────────────────────────────
+async function igRenderSpecs() {
+  const host = document.getElementById('igHost');
+  host.innerHTML = '<div class="ig-empty">Rendering…</div>';
+  try {
+    const r = await fetch('/api/ig/specs'); const j = await r.json();
+    const todo = (j.items || []).filter(s => !s.rendered);
+    if (!todo.length) { host.innerHTML = '<div class="ig-empty">All specs already rendered.</div>'; return; }
+    for (const s of todo) {
+      host.innerHTML = `<div class="ig-empty">Rendering ${s.slug}…</div>`;
+      await fetch('/api/ig/render', {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({file: s.file})});
+    }
+  } catch (e) { host.innerHTML = `<div class="ig-empty">failed: ${e.message}</div>`; }
+  loadIgPipeline();
+}
+let igItems = [];
+
+async function loadIgPipeline() {
+  const el = document.getElementById('content');
+  const host = document.getElementById('igHost') || (() => {
+    const d = document.createElement('div'); d.id = 'igHost'; el.appendChild(d); return d;
+  })();
+  host.innerHTML = '<div class="ig-empty">Loading queue…</div>';
+  try {
+    const r = await fetch('/api/ig/pending');
+    const j = await r.json();
+    igItems = j.items || [];
+    renderIgPipeline();
+  } catch (e) {
+    host.innerHTML = `<div class="ig-empty">Could not load queue: ${e.message}</div>`;
+  }
+}
+
+function igStateClass(s) {
+  return s === 'APPROVED' ? 'ig-ok' : s === 'FAIL' ? 'ig-bad' : s === 'PASS' ? 'ig-pass' : 'ig-warn';
+}
+
+function renderIgPipeline() {
+  const host = document.getElementById('igHost');
+  if (!igItems.length) {
+    host.innerHTML = `<div class="ig-empty">
+      <b>Nothing waiting.</b><br>
+      Render a spec locally — <code>python3 scripts/ig_render.py reference/ig-specs/&lt;spec&gt;.json</code>
+      — and it appears here for approval.</div>`;
+    return;
+  }
+  host.innerHTML = igItems.map(it => {
+    const g = it.gate || {};
+    const thumbs = it.slides.slice(0, 10).map((s, i) =>
+      `<img class="ig-thumb" src="/api/ig/slides/${it.slug}/${s}" title="slide ${i + 1}"
+            onclick="window.open(this.src,'_blank')">`).join('');
+    const fails = (g.caption_fails || []).map(f => `<li>${f}</li>`).join('');
+    const canPublish = it.state === 'APPROVED';
+    return `<div class="ig-card">
+      <div class="ig-top">
+        <div>
+          <div class="ig-slug">${it.slug}</div>
+          <div class="ig-cap">${(it.caption_preview || '').replace(/</g, '&lt;')}</div>
+        </div>
+        <span class="ig-state ${igStateClass(it.state)}">${it.state}</span>
+      </div>
+      <div class="ig-meta">
+        <span>${it.slide_count} slides</span>
+        <span>caption: <b>${g.caption_verdict || '—'}</b></span>
+        <span>human: <b>${g.human_score != null ? g.human_score.toFixed(1) : '—'}</b></span>
+        <span>${it.language || ''} ${it.brand ? '· ' + it.brand : ''}</span>
+      </div>
+      ${fails ? `<ul class="ig-fails">${fails}</ul>` : ''}
+      <div class="ig-strip">${thumbs}</div>
+      <div class="ig-acts">
+        <button class="btn-sec" onclick="igAct('check','${it.slug}')">Re-check</button>
+        <button class="btn-run" onclick="igAct('approve','${it.slug}')"
+          ${it.state === 'APPROVED' ? 'disabled' : ''}>Approve</button>
+        <button class="btn-sec" onclick="igPublish('${it.slug}', true)"
+          ${canPublish ? '' : 'disabled'}>Publish (dry run)</button>
+        <button class="btn-sec ig-live" onclick="igPublish('${it.slug}', false)"
+          ${canPublish ? '' : 'disabled'}>Publish LIVE</button>
+        <button class="btn-sec ig-rej" onclick="igAct('reject','${it.slug}')">Reject</button>
+      </div>
+      <pre class="ig-out" id="out-${it.slug}"></pre>
+    </div>`;
+  }).join('');
+}
+
+async function igAct(action, slug) {
+  const out = document.getElementById('out-' + slug);
+  if (out) out.textContent = action + '…';
+  try {
+    const r = await fetch(`/api/ig/${action}/${slug}`, { method: 'POST' });
+    const j = await r.json();
+    if (out) out.textContent = j.output || j.detail || JSON.stringify(j);
+  } catch (e) {
+    if (out) out.textContent = 'error: ' + e.message;
+  }
+  loadIgPipeline();
+}
+
+async function igPublish(slug, dry) {
+  if (!dry && !confirm(`Publish "${slug}" LIVE to Instagram now?\n\nThis cannot be undone.`)) return;
+  const out = document.getElementById('out-' + slug);
+  if (out) out.textContent = dry ? 'dry run…' : 'PUBLISHING LIVE…';
+  try {
+    const r = await fetch(`/api/ig/publish/${slug}?dry_run=${dry}`, { method: 'POST' });
+    const j = await r.json();
+    if (out) out.textContent = (j.output || '') + (j.error ? '\n' + j.error : '');
+  } catch (e) {
+    if (out) out.textContent = 'error: ' + e.message;
+  }
+  loadIgPipeline();
+}
+
+
+
+</script>
+</body>
+</html>

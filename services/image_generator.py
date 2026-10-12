@@ -1,37 +1,54 @@
 """
-Generate carousel slide images using Gemini API.
-Replicates the nano-banana MCP tool behaviour directly.
+Generate carousel slide images using Gemini REST API directly.
+Uses requests (same approach as gmb.py) to avoid SDK version conflicts.
 """
 import os
 import io
 import base64
 from pathlib import Path
-import google.generativeai as genai
+import requests
 from PIL import Image
 
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+_MODELS = [
+    "gemini-3-pro-image-preview",
+    "gemini-2.0-flash-preview-image-generation",
+]
 
-MODEL = "gemini-2.0-flash-preview-image-generation"
 
-
-def _gen(prompt: str) -> Image.Image:
-    model = genai.GenerativeModel(MODEL)
-    response = model.generate_content(
-        contents=prompt,
-        generation_config=genai.GenerationConfig(
-            response_modalities=["IMAGE", "TEXT"],
-        ),
-    )
-    for part in response.candidates[0].content.parts:
-        if hasattr(part, "inline_data") and part.inline_data:
-            return Image.open(io.BytesIO(part.inline_data.data))
-    raise RuntimeError("Gemini returned no image")
+def _gen(prompt: str) -> tuple:
+    """Returns (Image, model_used)."""
+    body = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"responseModalities": ["IMAGE", "TEXT"]},
+    }
+    last_err = "no models tried"
+    for model in _MODELS:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_API_KEY}"
+        try:
+            resp = requests.post(url, json=body, timeout=120)
+            data = resp.json()
+            if "error" in data:
+                last_err = data["error"].get("message", str(data["error"]))
+                print(f"[image_gen] {model} failed: {last_err[:120]}")
+                continue
+            for cand in data.get("candidates", []):
+                for part in cand.get("content", {}).get("parts", []):
+                    b64 = part.get("inlineData", {}).get("data", "")
+                    if b64:
+                        print(f"[image_gen] SUCCESS using {model}")
+                        return Image.open(io.BytesIO(base64.b64decode(b64))), model
+            last_err = "no image in response"
+            print(f"[image_gen] {model}: no image in response")
+        except Exception as e:
+            last_err = str(e)
+            print(f"[image_gen] {model} exception: {last_err[:120]}")
+    raise RuntimeError(f"Gemini image generation failed: {last_err}")
 
 
 def generate_slide(prompt: str, output_path: str) -> str:
     """Generate a single slide image and save to output_path. Returns the path."""
-    img = _gen(prompt)
-    # Resize to exactly 1080×1350 if needed
+    img, model_used = _gen(prompt)
     if img.size != (1080, 1350):
         img = img.resize((1080, 1350), Image.LANCZOS)
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
@@ -173,3 +190,157 @@ TOP-LEFT text block:
 BOTTOM-CENTER: "@dreamworldtours" very small text
 
 NO gradient overlay. NO background box. Editorial raw. High-fidelity text. Portrait 1080×1350px."""
+
+
+# ── Inspiration 6 prompt builders — Split-Screen "Country Has Place" style ─────
+# Modeled after @luxuryvacations_abroad's high-engagement carousel format:
+# - Cover: hook headline + iconic single destination photo
+# - Inner: SPLIT-SCREEN 50/50 — two destinations per slide, each labeled "[COUNTRY] Has [PLACE]"
+# - CTA: dark gradient + yellow highlight box + WhatsApp number
+
+def insp6_cover_prompt(data: dict) -> str:
+    return f"""Portrait 1080×1350px Instagram carousel cover slide. High-engagement vibrant travel design.
+
+BACKGROUND: Full-bleed ultra-photorealistic cinematic photo of {data['photo_direction']}. Vivid saturated colors — turquoise water, vibrant skies, lush greens. Aspirational tropical/iconic travel destination. National Geographic quality, dynamic composition.
+
+OVERLAY: Subtle dark gradient TOP 40% only — heavier at top, fading to fully transparent at the photo's lower half.
+
+TOP-RIGHT: small clean "Dream World Tours" pill badge, semi-transparent white background, dark teal #0c6980 text.
+
+HEADLINE — centered or top-left, very large bold white sans-serif with HIGHLIGHTED key words:
+- Background of key phrase has a solid YELLOW (#FFEB3B) highlight rectangle behind it (like a marker highlight effect)
+- Large bold white text on yellow: "{data['headline_line_1']}"
+- Below in plain bold white (no highlight): "{data['headline_line_2']}"
+- Below smaller plain bold white: "{data.get('headline_line_3', '')}"
+
+Below headline: small white regular text: "{data['subtitle']}"
+
+BOTTOM-RIGHT: small white text "Swipe to discover →" in italic
+
+NO clutter. Bold, vibrant, scroll-stopping. Portrait 1080×1350px. High-fidelity rendered text. Modern Instagram travel aesthetic."""
+
+
+def insp6_paired_inner_prompt(data: dict) -> str:
+    """Split-screen inner slide showing 2 destinations stacked vertically.
+    Required keys: top_country, top_place, top_photo, bottom_country, bottom_place, bottom_photo, slide_counter
+    """
+    return f"""Portrait 1080×1350px Instagram carousel inner slide. Split-screen 2-destination vibrant travel design.
+
+LAYOUT: Vertical 50/50 split — TOP HALF (540px) and BOTTOM HALF (540px), each a full-bleed photo. NO gap between halves — touching edges directly.
+
+TOP HALF (upper 540px):
+- Full-bleed ultra-photorealistic cinematic photo: {data['top_photo']}. Vivid saturated colors, scroll-stopping composition.
+- BOTTOM-CENTER text overlay (anchored to lower portion of the top half):
+  - YELLOW (#FFEB3B) bold large sans-serif: "{data['top_country']}"
+  - immediately followed by WHITE bold same-size text: "Has {data['top_place']}"
+  - All on one line, centered. Yellow country + space + white place.
+  - Text should have subtle dark shadow for readability over photo.
+
+BOTTOM HALF (lower 540px):
+- Full-bleed ultra-photorealistic cinematic photo: {data['bottom_photo']}. Vivid saturated colors, equally striking composition.
+- BOTTOM-CENTER text overlay (anchored to lower portion of the bottom half):
+  - YELLOW (#FFEB3B) bold large sans-serif: "{data['bottom_country']}"
+  - immediately followed by WHITE bold same-size text: "Has {data['bottom_place']}"
+  - All on one line, centered, same shadow treatment.
+
+TOP-RIGHT corner of overall image: small dark pill badge with "{data['slide_counter']}" white text — semi-transparent dark fill.
+TOP-RIGHT corner: small "Dream World Tours" branding pill in white text on semi-transparent dark fill — positioned just below the slide counter or beside it.
+
+NO border between the two halves. NO extra text. NO destination descriptions. Just country + iconic place per half. Portrait 1080×1350px. High-fidelity text. Bold vibrant travel poster style."""
+
+
+# ── Inspiration 7 prompt builders — Cinematic Yellow-Accent Storytelling ──────
+# Modeled after @luxuryvacations_abroad's "Top Spiritual Places in India 2026" carousel
+# (707 likes, 146 shares — strong engagement).
+# Key signature:
+# - Single destination per slide (NOT split-screen)
+# - Bottom-anchored text block
+# - Yellow accent on destination/key words, white descriptor below
+# - Cinematic dark/moody full-bleed photography
+# - Marker-style yellow highlight on a key word in the cover headline
+
+def insp7_cover_prompt(data: dict) -> str:
+    return f"""Portrait 1080×1350px Instagram carousel cover slide. Cinematic dramatic storytelling design.
+
+BACKGROUND: Full-bleed ultra-photorealistic cinematic photo of {data['photo_direction']}. DARK MOODY atmosphere — golden hour, candle-lit, evening, or low-light dramatic lighting. Rich saturated colors with deep shadows. Editorial National Geographic quality.
+
+OVERLAY: NO gradient at top. Subtle dark gradient ONLY at bottom 40% — barely-there to ensure text legibility. Photo dominates the entire frame.
+
+TOP-RIGHT corner: Small "Dream World Tours" pill badge — semi-transparent white background with dark teal #0c6980 text.
+
+BOTTOM TEXT BLOCK (anchored at lower portion of image, left-aligned, generous bottom margin):
+- Large bold white uppercase sans-serif (NOT condensed, standard width): "{data['headline_line_1']}"
+- Next line, same style: "{data.get('headline_line_2', '')}"
+- Highlighted segment within the headline: the word "{data.get('highlight_word', 'INDIA')}" appears with a SOLID YELLOW (#FFEB3B) rectangle background behind it, with the word in DARK NAVY/BLACK text on the yellow — marker highlight effect, like a physical text highlighter
+- The highlight should sit inline within the line of text, not as a separate badge
+
+NO subtitle, NO description, NO CTAs on the cover — just the title with marker highlight.
+
+Editorial cinematic. Bold scroll-stopping. Portrait 1080×1350px. High-fidelity rendered text."""
+
+
+def insp7_inner_prompt(data: dict) -> str:
+    return f"""Portrait 1080×1350px Instagram carousel inner slide. Cinematic single-destination design.
+
+BACKGROUND: Full-bleed ultra-photorealistic cinematic photo of {data['photo_direction']}. Vivid rich colors, dramatic composition, golden hour or dramatic lighting. Editorial National Geographic quality.
+
+OVERLAY: Subtle dark gradient ONLY at bottom 35% — gentle, ensures text readability without obscuring photo.
+
+TOP-RIGHT corner area:
+- Small slide counter pill — dark semi-transparent fill: "{data['slide_counter']}" white text small
+- Below or beside it: tiny "Dream World Tours" branding pill — same dark fill, white text
+
+BOTTOM TEXT BLOCK (anchored at lower portion of image, centered horizontally):
+- YELLOW (#FFEB3B) large bold uppercase sans-serif (NOT condensed): "{data['destination_name']}"
+- Subtle dark text shadow for legibility against varied backgrounds
+- Below in WHITE smaller regular sans-serif (NOT italic), centered, 2 lines max: "{data['descriptor']}"
+- White text also with subtle dark shadow
+
+NO destination subtitle, NO city/state line, NO emojis. Just the bold yellow destination name + white descriptor.
+
+Cinematic editorial storytelling. Bold visual hierarchy. Portrait 1080×1350px. High-fidelity rendered text."""
+
+
+def insp7_cta_prompt(data: dict) -> str:
+    return f"""Portrait 1080×1350px Instagram carousel final CTA slide. Cinematic conversion-focused design.
+
+BACKGROUND: Full-bleed ultra-photorealistic cinematic photo of {data['photo_direction']}. Dramatic golden hour or moody lighting. Editorial quality.
+
+OVERLAY: Dark gradient covering BOTTOM 55% — heavier toward the bottom, fading transparent at the middle.
+
+TOP-RIGHT: Small "Dream World Tours" pill badge — semi-transparent white background with teal #0c6980 text.
+
+BOTTOM TEXT BLOCK (anchored at lower portion, left-aligned):
+- Bold white uppercase sans-serif: "{data['hook_line_1']}"
+- Same line continuing OR next line, same style: "{data.get('hook_line_2', '')}"
+- Within these lines, the word "{data.get('highlight_word', 'TODAY')}" gets the YELLOW MARKER highlight (solid yellow #FFEB3B rectangle behind, dark navy text on yellow) — same marker-highlighter style as the cover
+- Below in WHITE regular smaller text: "{data['save_prompt']}"
+
+BELOW THAT (still in bottom block):
+- A thin yellow horizontal line OR a small yellow CTA-style text: "WhatsApp us at {data['contact_phone']} →"
+- Tiny white text below: "dreamworldtours.in"
+
+NO clutter. Yellow marker highlight is the focal point. Portrait 1080×1350px. High-fidelity rendered text."""
+
+
+def insp6_cta_prompt(data: dict) -> str:
+    return f"""Portrait 1080×1350px Instagram carousel final CTA slide. Vibrant high-conversion travel design.
+
+BACKGROUND: Full-bleed ultra-photorealistic cinematic photo of {data['photo_direction']}. Vivid saturated colors, aspirational iconic travel scene.
+
+OVERLAY: Dark gradient covering TOP 50% — heavier at the very top fading to transparent at the middle.
+
+TOP-RIGHT: small "Dream World Tours" pill badge — semi-transparent white background with teal #0c6980 text.
+
+CENTERED in upper portion of image:
+- YELLOW (#FFEB3B) solid highlight rectangle with bold large dark navy text: "{data['hook_line_1']}"
+- Below in plain bold large WHITE text (no highlight): "{data['hook_line_2']}"
+- Below in plain bold medium WHITE text: "{data['hook_line_3']}"
+
+BELOW THAT (centered):
+- A yellow-bordered transparent box (1080×~90px) — yellow #FFEB3B border 3px, no fill
+- Inside the box in white text, centered: "Call or WhatsApp us at {data['contact_phone']} For Details"
+
+BOTTOM-CENTER: very small white text: "dreamworldtours.in · @dreamworldtours_"
+
+NO clutter. Bold, vibrant, conversion-focused. Yellow highlight + yellow-bordered box are the visual focal points. Portrait 1080×1350px. High-fidelity rendered text."""

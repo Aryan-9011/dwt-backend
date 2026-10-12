@@ -6,7 +6,10 @@ RUN apt-get update && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g @anthropic-ai/claude-code && \
+    apt-get install -y --no-install-recommends chromium fonts-dejavu-core fonts-noto-core && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV CHROME_BIN=/usr/bin/chromium
 
 WORKDIR /app
 

@@ -1,0 +1,112 @@
+{
+  "slug": "wandrcrew",
+  "name": "Wandrcrew",
+  "wordmark": "WANDRCREW",
+  "domain": "TODO",
+  "tagline": "Travel together. Belong anywhere.",
+  "campaign_line": "Go somewhere you'll talk about for years.",
+  "product_descriptor": "Treks · Road Trips · Backpacking · Getaways · Experiences",
+  "tagline_devanagari": null,
+  "tagline_required_on_posts": false,
+  "reference_doc": "reference/wandrcrew-brand-reference.md",
+  "default_kind": "trek",
+  "categories": [
+    "weekend-escape",
+    "trek",
+    "backpacking",
+    "road-trip",
+    "expedition",
+    "experience"
+  ],
+  "colors": {
+    "primary": "#0E7C7B",
+    "primary_bright": "#14A5A0",
+    "accent": "#F5BE28",
+    "paper": "#F4FAFA",
+    "ink": "#0E2E2C",
+    "coral": "#C96545"
+  },
+  "color_rules": {
+    "proportion": {
+      "paper": 0.55,
+      "primary": 0.3,
+      "accent": 0.15
+    },
+    "accent_is_primary_action": true,
+    "text_on_accent": "#0E2E2C",
+    "never": [
+      "white text on the yellow accent",
+      "neon or washed-out teal",
+      "pure #000000 for text — always use the deep teal-ink",
+      "coral as a lead colour — it is a rare second accent only"
+    ]
+  },
+  "fonts": {
+    "display": "Clash Display / Gabarito — bold, characterful",
+    "body": "Satoshi",
+    "never": [
+      "formal serif — reads too grown-up for this brand"
+    ]
+  },
+  "voice": {
+    "register": "playful, high-energy, group-chat Indian",
+    "person": "second person, peer-to-peer",
+    "prefer": [
+      "travel together",
+      "the crew",
+      "who's coming",
+      "you should've been here"
+    ],
+    "avoid": [
+      "luxury",
+      "premium",
+      "hassle-free",
+      "end-to-end",
+      "world-class",
+      "strangers become family",
+      "meet strangers / friendship guaranteed",
+      "ONLY 2 SEATS LEFT — manufactured scarcity of any kind",
+      "corporate or over-polished register"
+    ]
+  },
+  "imagery": {
+    "people_ratio": 0.7,
+    "style": "candid, high-energy, a little scrappy — laughing Indian faces over cinematic polish",
+    "rule": "don't make the audience admire the people — make them imagine themselves as one of the people",
+    "prefer_real_media": true
+  },
+  "content_mix": {
+    "people_community": 0.3,
+    "discovery": 0.2,
+    "relatable_travel": 0.15,
+    "journey_experience": 0.15,
+    "expertise": 0.1,
+    "brand_product": 0.1
+  },
+  "fomo_rule": "liveness, not scarcity — show that something is happening and the reader wishes they were there; never count down seats",
+  "trips": {
+    "source": "manual",
+    "file": "data/trips.wandrcrew.json"
+  },
+  "inspirations": [
+    "cinematic-yellow",
+    "vibrant-tropical",
+    "polaroid-scrapbook",
+    "minimal-modern"
+  ],
+  "channels": {
+    "instagram": {
+      "enabled": false,
+      "env_prefix": "WANDRCREW_"
+    },
+    "whatsapp": {
+      "enabled": true
+    },
+    "gmb": {
+      "enabled": false
+    }
+  },
+  "logo": {
+    "knockout": "assets/wandrcrew-logo-knockout.png"
+  }
+}

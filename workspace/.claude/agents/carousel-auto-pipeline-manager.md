@@ -49,17 +49,47 @@ outputs/automation/carousel-pipeline/slides-[YYYY-MM-DD]/
 
 ---
 
+## Step 1b — Choose Content Type
+
+Read `outputs/automation/pipeline-log.jsonl`. Extract `content_type` from the last 3 completed pipeline runs.
+
+Then pick a content type from this rotation list that has NOT been used in the last 3 runs:
+
+```
+DESTINATION_LIST   — Top N places roundup (multiple destinations)
+ITINERARY          — Full day-by-day plan for one destination (5N/6D etc.)
+HIDDEN_GEMS        — Underrated spots inside one well-known destination
+TIPS_PRACTICAL     — Must-know tips / survival guide before visiting
+MYTH_BUST          — Busting fears and misconceptions about a destination
+EXPERIENCE_SPOTLIGHT — Deep dive on one iconic activity or experience
+BUDGET_BREAKDOWN   — Real cost breakdown in INR for Indian travelers
+COMPARISON         — Destination A vs B: which should you pick?
+FOOD_GUIDE         — Must-try food/street food at a destination
+SEASONAL_GUIDE     — When to go, what each season offers
+```
+
+If all types appear in recent history, pick the one used longest ago.
+
+**Do NOT always default to DESTINATION_LIST.** High-quality travel Instagram content is varied. Rotate deliberately.
+
+---
+
 ## Step 2 — Research Article
 
 Spawn `travel-article-researcher` agent with this brief:
 
 ```
-Find a trending travel article suitable for Dream World Tours' Indian audience (25–55 age group, group tours, aspirational domestic + international travel).
+Research today's carousel topic for Dream World Tours.
 
-Today is [DAY], [DATE]. Previous pipeline runs are in outputs/automation/publish-log.jsonl — check it to avoid repeating the same theme as the last run.
+Content type for this run: [CHOSEN_CONTENT_TYPE]
+Today is [DAY], [DATE].
+Preferred region/scope: [pick intelligently — alternate between India domestic and international]
+Avoid these recent themes: [list topics from last 3 pipeline-log.jsonl entries]
 
-Extract all location data and write the carousel brief JSON.
-Save to: outputs/automation/carousel-pipeline/article-research-[DATE].json
+Find relevant source material for this content type, extract all structured data, and save to:
+outputs/automation/carousel-pipeline/article-research-[DATE].json
+
+Log all search queries and article URLs visited in research_trail.
 ```
 
 Wait for completion. Parse the returned research JSON path.
@@ -116,8 +146,24 @@ Wait for completion. Verify slide files exist.
 Append to `outputs/automation/pipeline-log.jsonl`:
 
 ```json
-{"event": "pipeline_complete", "date": "[DATE]", "time": "[TIME]", "status": "ready_to_post", "topic": "[topic]", "slides": N, "slides_folder": "outputs/automation/carousel-pipeline/slides-[DATE]/"}
+{"event": "pipeline_complete", "date": "[DATE]", "time": "[TIME]", "status": "ready_to_post", "content_type": "[CHOSEN_CONTENT_TYPE]", "topic": "[topic]", "slides": N, "slides_folder": "outputs/automation/carousel-pipeline/slides-[DATE]/"}
 ```
+
+---
+
+## Step 5b — Write Activity Logs to Google Sheets
+
+Run the pipeline log writer to save full research notes + all nano-banana prompts to the "Pipeline Logs" sheet tab:
+
+```bash
+python3 scripts/pipeline_log_writer.py --date [DATE]
+```
+
+This writes:
+- 1 Research Summary row — article source, topic rationale, target audience, destinations covered, caption preview
+- 1 row per slide — slide name, location, headline, descriptor, and the **full nano-banana prompt** used
+
+If the script fails (e.g. Sheets credentials not available), log the error but do NOT stop or re-run — slides are already saved locally.
 
 ---
 

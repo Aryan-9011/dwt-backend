@@ -202,6 +202,8 @@ Testimonial: [customer name] (slide [N])
 
 ## Hard Rules
 
+0. **Edit before regenerate — always.** If asked to make a small change to already-generated slides (add text, fix a label, change wording), use `mcp__nano-banana__edit_image` on the existing PNG files. Do NOT regenerate slides from scratch for small copy changes — it wastes Gemini credits. Only regenerate a slide if the edit tool fails or the structural layout must change. If regenerating IS needed, only regenerate the specific slides that changed — never the full set.
+
 1. **ONE template for the entire carousel** — do not switch styles between slides
 2. **Reuse the same prompt base** for every slide — only change the content fields
 3. **Price always in a shaped element** — amber circle, pill, or badge. Never plain text.
